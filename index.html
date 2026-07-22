@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Nova Works — Nova Financial Technologies</title>
+<meta name="description" content="How Nova Financial Technologies works: an AI-native FinTech where ~40 agents across 8 departments do the repetitive 80% and humans own the 20%. The repository architecture, the governance golden path, and the factory economics — explained.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235BBFA4'/%3E%3Cstop offset='1' stop-color='%23A6A7F5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92' fill='none' stroke='url(%23g)' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F4F6FB;
+    --paper-warm: #FBF7F0;
+    --deep: #0B1126;
+    --ink: #0E1530;
+    --muted: #6B7388;
+    --muted-2: #9097A8;
+    --mint: #A7E8D9;
+    --mint-2: #7CD9C2;
+    --mint-deep: #5BBFA4;
+    --mint-text: #1f9c82;
+    --lavender: #A6A7F5;
+    --blue: #7DBCFD;
+    --amber: #F2B766;
+    --card: #FFFFFF;
+    --border: #E5E9EF;
+    --primary-50: #F0FBF8;
+
+    --shadow-sm: 0 2px 8px rgba(47,58,70,0.06);
+    --shadow-md: 0 12px 32px rgba(47,58,70,0.10);
+    --shadow-mint: 0 10px 22px rgba(91,191,164,0.28);
+    --shadow-mint-lg: 0 18px 38px rgba(91,191,164,0.32);
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+    --font-mono: 'Menlo', 'SF Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ─── AURORA ─── */
+  .aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--paper); }
+  .aurora .mint-glow {
+    position: absolute; width: 130%; height: 100%; top: -20%; left: -30%;
+    background: radial-gradient(ellipse 65% 50% at 22% 14%, rgba(167,232,217,0.45) 0%, transparent 65%);
+  }
+  .aurora .lav-glow {
+    position: absolute; width: 110%; height: 90%; top: -10%; right: -25%;
+    background: radial-gradient(ellipse 55% 45% at 80% 22%, rgba(166,167,245,0.30) 0%, transparent 65%);
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.05rem 2.5rem;
+    background: rgba(244, 246, 251, 0.75);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(229,233,239,0.5);
+  }
+  .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; }
+  .brand-mark { width: 30px; height: 30px; flex-shrink: 0; }
+  .brand-name { font-family: var(--font-serif); font-style: italic; font-size: 1.55rem; color: var(--ink); letter-spacing: -0.01em; line-height: 1; }
+  .brand-name::after { content: '.'; color: var(--mint-deep); }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+  .nav-links a { font-size: 0.78rem; font-weight: 500; color: var(--ink); text-decoration: none; transition: color 0.2s; position: relative; }
+  .nav-links a:hover { color: var(--mint-deep); }
+  .nav-links a.active { color: var(--mint-deep); }
+  .nav-links a.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+    background: linear-gradient(90deg, var(--mint-deep), var(--lavender)); border-radius: 2px;
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 6.5rem 2.5rem 4.5rem; max-width: 1200px; margin: 0 auto; }
+  .section-head { max-width: 720px; margin-bottom: 2.75rem; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+    background: rgba(167, 232, 217, 0.32); border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; color: var(--ink); margin-bottom: 1.3rem;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--mint-deep);
+    animation: pulse-dot 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.55; box-shadow: 0 0 0 0 rgba(91,191,164,0.6); }
+    50% { transform: scale(1.18); opacity: 1; box-shadow: 0 0 10px 2px rgba(91,191,164,0.5); }
+  }
+
+  .section-title {
+    font-size: clamp(1.9rem, 4.2vw, 2.9rem); line-height: 1.1; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--ink); margin-bottom: 0.9rem;
+  }
+  .accent {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--mint-deep); font-size: 1.12em; letter-spacing: -0.005em;
+  }
+  .section-lead { font-size: 1rem; color: var(--muted); max-width: 640px; line-height: 1.7; }
+
+  /* ─── HERO ─── */
+  #hero {
+    max-width: none; margin: 0; padding: 0;
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    background: var(--deep); position: relative; overflow: hidden;
+  }
+  .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+  .hero-bg .g1 { position: absolute; width: 90%; height: 80%; top: -20%; left: -15%;
+    background: radial-gradient(ellipse 55% 50% at 30% 20%, rgba(125,188,253,0.22) 0%, transparent 62%); }
+  .hero-bg .g2 { position: absolute; width: 90%; height: 80%; top: -10%; right: -20%;
+    background: radial-gradient(ellipse 50% 45% at 75% 18%, rgba(166,167,245,0.24) 0%, transparent 62%); }
+  .hero-bg .g3 { position: absolute; width: 90%; height: 70%; bottom: -20%; left: 20%;
+    background: radial-gradient(ellipse 50% 50% at 50% 80%, rgba(91,191,164,0.16) 0%, transparent 62%); }
+  .hero-inner { max-width: 1200px; margin: 0 auto; padding: 8rem 2.5rem 5rem; position: relative; z-index: 1; width: 100%; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 13px;
+    background: rgba(125,188,253,0.14); border: 1px solid rgba(125,188,253,0.22); border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; color: #CFE3FF; margin-bottom: 1.6rem;
+  }
+  .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: pulse-dot 2.6s ease-in-out infinite; }
+  .hero h1 {
+    font-size: clamp(2.7rem, 7vw, 5rem); line-height: 1.03; font-weight: 800;
+    letter-spacing: -0.03em; color: #F5F7FC; max-width: 16ch;
+  }
+  .hero h1 .accent { color: var(--mint); }
+  .hero h1 .dot { color: var(--mint-deep); }
+  .hero-sub { font-size: clamp(1.05rem, 2vw, 1.25rem); color: #A7AFC6; margin-top: 1.5rem; max-width: 60ch; line-height: 1.6; font-weight: 400; }
+  .hero-sub b { color: #E4E9F5; font-weight: 600; }
+  .hero-cta-row { display: flex; gap: 0.85rem; margin-top: 2.5rem; flex-wrap: wrap; align-items: center; }
+  .cta-pill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 54px; padding: 0 24px;
+    background: var(--mint-2); color: var(--ink); border-radius: 12px; font-family: inherit;
+    font-size: 15px; font-weight: 800; letter-spacing: 0.2px; border: none; cursor: pointer; text-decoration: none;
+    box-shadow: var(--shadow-mint); transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .cta-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-mint-lg); }
+  .cta-pill .chev { width: 18px; height: 18px; flex-shrink: 0; }
+  .cta-ghost {
+    display: inline-flex; align-items: center; gap: 8px; height: 54px; padding: 0 22px;
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); color: #D5DBEC;
+    font-size: 14px; font-weight: 600; text-decoration: none; transition: border-color 0.2s, color 0.2s;
+  }
+  .cta-ghost:hover { border-color: rgba(167,232,217,0.5); color: #fff; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 2.4rem; margin-top: 3.5rem; }
+  .hero-stat .v { font-size: 1.7rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+  .hero-stat .v .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint); }
+  .hero-stat .k { font-size: 0.72rem; color: #8A93AD; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+  /* ─── GENERIC CARD GRIDS ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: rgba(255,255,255,0.75); border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem;
+    backdrop-filter: blur(12px); transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(91,191,164,0.35); }
+  .card .ic {
+    width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--mint), var(--lavender));
+    display: flex; align-items: center; justify-content: center; color: var(--ink); margin-bottom: 1rem;
+    box-shadow: 0 6px 14px rgba(91,191,164,0.22);
+  }
+  .card .ic svg { width: 22px; height: 22px; }
+  .card h3 { font-size: 1.12rem; font-weight: 700; color: var(--ink); margin-bottom: 0.45rem; letter-spacing: -0.01em; }
+  .card h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); font-size: 1.1em; }
+  .card p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+  /* ─── FACTORY VS CONSULTANCY ─── */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 2.5rem; }
+  @media (max-width: 820px) { .split { grid-template-columns: 1fr; } }
+  .split-card { border-radius: 20px; padding: 1.9rem; border: 1px solid var(--border); }
+  .split-card.no { background: var(--paper-warm); border-color: rgba(242,183,102,0.35); }
+  .split-card.yes { background: linear-gradient(180deg, rgba(240,251,248,0.9), #fff); border-color: rgba(91,191,164,0.4); }
+  .split-tag {
+    display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 0.62rem;
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; padding: 5px 10px; border-radius: 999px; margin-bottom: 1rem;
+  }
+  .split-card.no .split-tag { background: rgba(242,183,102,0.18); color: #b5761a; }
+  .split-card.yes .split-tag { background: var(--primary-50); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.25); }
+  .split-card h3 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 0.6rem; }
+  .split-card h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); }
+  .split-card p { font-size: 0.92rem; color: var(--muted); line-height: 1.65; }
+  .split-card ul { list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: 0.55rem; }
+  .split-card li { font-size: 0.88rem; color: var(--ink); display: flex; gap: 0.6rem; align-items: flex-start; }
+  .split-card li .m { flex-shrink: 0; font-weight: 800; }
+  .split-card.yes li .m { color: var(--mint-deep); }
+  .split-card.no li .m { color: var(--amber); }
+
+  /* ─── 80/20 BAR ─── */
+  .ratio { margin-top: 2.75rem; background: linear-gradient(135deg, var(--ink) 0%, #1a2348 100%); border-radius: 22px; padding: 2.25rem; color: #fff; position: relative; overflow: hidden; }
+  .ratio::before { content: ''; position: absolute; top: -60px; right: -40px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(167,232,217,0.26), transparent 70%); }
+  .ratio::after { content: ''; position: absolute; bottom: -70px; left: -30px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(166,167,245,0.20), transparent 70%); }
+  .ratio h3 { font-size: 1.35rem; font-weight: 700; margin-bottom: 0.5rem; position: relative; letter-spacing: -0.01em; }
+  .ratio h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint); }
+  .ratio p { color: rgba(255,255,255,0.72); font-size: 0.92rem; max-width: 60ch; position: relative; margin-bottom: 1.5rem; }
+  .ratio-bar { display: flex; height: 62px; border-radius: 14px; overflow: hidden; position: relative; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+  .ratio-seg { display: flex; flex-direction: column; justify-content: center; padding: 0 1.2rem; position: relative; }
+  .ratio-seg.agents { flex: 0 0 80%; background: linear-gradient(135deg, rgba(91,191,164,0.9), rgba(124,217,194,0.8)); color: #06231c; }
+  .ratio-seg.humans { flex: 0 0 20%; background: linear-gradient(135deg, rgba(166,167,245,0.9), rgba(125,188,253,0.85)); color: #101440; }
+  .ratio-seg .big { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .ratio-seg .lbl { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; margin-top: 3px; opacity: 0.85; }
+  @media (max-width: 560px) { .ratio-seg .lbl { display: none; } }
+
+  /* ─── FLEET / DEPARTMENTS ─── */
+  .fleet { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2.5rem; }
+  @media (max-width: 820px) { .fleet { grid-template-columns: 1fr; } }
+  .dept {
+    background: #fff; border: 1px solid var(--border); border-radius: 18px; overflow: hidden;
+    transition: box-shadow 0.3s, border-color 0.3s; align-self: start;
+  }
+  .dept.open { box-shadow: var(--shadow-md); border-color: rgba(91,191,164,0.4); }
+  .dept-head {
+    width: 100%; display: flex; align-items: center; gap: 1rem; padding: 1.2rem 1.3rem;
+    background: none; border: none; cursor: pointer; text-align: left; font-family: inherit;
+  }
+  .dept-badge {
+    width: 40px; height: 40px; flex-shrink: 0; border-radius: 11px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--mint), var(--lavender)); color: var(--ink); font-weight: 800; font-size: 0.95rem;
+    box-shadow: 0 4px 10px rgba(91,191,164,0.2);
+  }
+  .dept-meta { flex: 1; min-width: 0; }
+  .dept-name { font-size: 1.02rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .dept-count { font-size: 0.76rem; color: var(--muted); font-family: var(--font-mono); }
+  .dept-chev { flex-shrink: 0; color: var(--muted-2); transition: transform 0.3s; }
+  .dept.open .dept-chev { transform: rotate(90deg); color: var(--mint-deep); }
+  .dept-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .dept.open .dept-body { max-height: 900px; }
+  .dept-body-inner { padding: 0 1.3rem 1.2rem; }
+  .agent-row {
+    display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0; border-top: 1px solid var(--border);
+  }
+  .agent-name { flex: 1; min-width: 0; font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+  .agent-job { font-size: 0.76rem; color: var(--muted); font-weight: 400; display: block; margin-top: 1px; }
+  .chip { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 600; letter-spacing: 0.04em; padding: 3px 7px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+  .chip-tier { background: var(--primary-50); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.28); }
+  .chip-tier.t4 { background: rgba(14,21,48,0.06); color: var(--ink); border-color: rgba(14,21,48,0.18); }
+  .chip-tier.t3 { background: rgba(242,183,102,0.16); color: #b5761a; border-color: rgba(242,183,102,0.35); }
+  .chip-wave { background: rgba(166,167,245,0.14); color: #5a5bd6; border: 1px solid rgba(166,167,245,0.3); }
+  .chip-wave.w1 { background: rgba(91,191,164,0.14); color: var(--mint-text); border-color: rgba(91,191,164,0.3); }
+  .chip-wave.w3 { background: rgba(242,183,102,0.14); color: #b5761a; border-color: rgba(242,183,102,0.3); }
+  .glue { margin-top: 1.75rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .glue-card { flex: 1; min-width: 240px; background: var(--paper-warm); border: 1px dashed rgba(242,183,102,0.5); border-radius: 16px; padding: 1.2rem 1.3rem; }
+  .glue-card .t { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 0.3rem; }
+  .glue-card .t .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); }
+  .glue-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+  .legend-row { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; margin-top: 1.6rem; font-size: 0.74rem; color: var(--muted); }
+  .legend-row .k { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-row .k b { color: var(--ink); font-weight: 700; }
+
+  /* ─── REPO DIAGRAM ─── */
+  .repo-wrap { margin-top: 2.5rem; display: grid; grid-template-columns: 1.55fr 1fr; gap: 1.5rem; align-items: start; }
+  @media (max-width: 960px) { .repo-wrap { grid-template-columns: 1fr; } }
+  .repo-groups { display: flex; flex-direction: column; gap: 1rem; }
+  .repo-group { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 1.15rem 1.2rem; }
+  .repo-group-h { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.85rem; }
+  .repo-group-tag {
+    width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.8rem; color: #fff; flex-shrink: 0;
+  }
+  .repo-group-tag.A { background: linear-gradient(135deg, #5BBFA4, #7CD9C2); }
+  .repo-group-tag.B { background: linear-gradient(135deg, #7DBCFD, #A6A7F5); }
+  .repo-group-tag.C { background: linear-gradient(135deg, #A6A7F5, #8f90ec); }
+  .repo-group-tag.D { background: linear-gradient(135deg, #0E1530, #33406e); }
+  .repo-group-tag.O { background: linear-gradient(135deg, #F2B766, #e79b3d); }
+  .repo-group-title { font-size: 0.82rem; font-weight: 700; color: var(--ink); }
+  .repo-group-title span { color: var(--muted); font-weight: 400; }
+  .repo-nodes { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .repo-node {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 10px;
+    background: var(--paper); border: 1px solid var(--border); cursor: pointer; font-family: var(--font-mono);
+    font-size: 0.74rem; color: var(--ink); transition: transform 0.15s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  }
+  .repo-node:hover, .repo-node.sel { transform: translateY(-2px); border-color: rgba(91,191,164,0.55); background: var(--primary-50); box-shadow: var(--shadow-sm); }
+  .repo-node.sel { box-shadow: 0 0 0 2px rgba(91,191,164,0.35); }
+  .repo-node .rdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .repo-node.star { font-weight: 700; }
+  .repo-detail {
+    position: sticky; top: 90px; background: linear-gradient(135deg, var(--ink) 0%, #1a2348 100%); color: #fff;
+    border-radius: 20px; padding: 1.6rem; min-height: 260px; overflow: hidden;
+  }
+  .repo-detail::before { content: ''; position: absolute; top: -50px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(167,232,217,0.22), transparent 70%); }
+  .rd-tag { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint); position: relative; }
+  .rd-name { font-family: var(--font-mono); font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0.5rem 0 0.35rem; position: relative; word-break: break-word; }
+  .rd-role { font-size: 0.8rem; color: var(--mint); position: relative; margin-bottom: 0.9rem; font-weight: 600; }
+  .rd-desc { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.65; position: relative; }
+  .rd-hint { font-size: 0.78rem; color: rgba(255,255,255,0.55); position: relative; }
+  .customer-layer { margin-top: 1.5rem; background: var(--paper-warm); border: 1px solid rgba(242,183,102,0.4); border-radius: 18px; padding: 1.3rem 1.4rem; }
+  .customer-layer .ch { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .customer-layer .ch .t { font-size: 0.95rem; font-weight: 700; color: var(--ink); }
+  .customer-layer .ch .t .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: #b5761a; }
+  .customer-layer .badge-amber { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(242,183,102,0.2); color: #b5761a; padding: 3px 8px; border-radius: 999px; }
+  .customer-layer p { font-size: 0.84rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.85rem; }
+  .customer-nodes { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+  .customer-node {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 9px;
+    background: #fff; border: 1px solid rgba(242,183,102,0.4); font-family: var(--font-mono); font-size: 0.72rem; color: #7a5518;
+  }
+  .customer-node .rdot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+
+  /* ─── GOLDEN PATH ─── */
+  #governance { }
+  .gp { margin-top: 2.5rem; background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 2rem; box-shadow: var(--shadow-sm); }
+  .gp-track { display: flex; align-items: stretch; gap: 0; position: relative; overflow-x: auto; padding-bottom: 0.5rem; }
+  .gp-step {
+    flex: 1; min-width: 118px; text-align: center; position: relative; padding: 0 0.4rem; cursor: pointer;
+    background: none; border: none; font-family: inherit;
+  }
+  .gp-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 24px; left: 50%; width: 100%; height: 2px; background: var(--border); z-index: 0;
+  }
+  .gp-step.done:not(:last-child)::after { background: linear-gradient(90deg, var(--mint-deep), var(--lavender)); }
+  .gp-dot {
+    width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 0.6rem; display: flex; align-items: center; justify-content: center;
+    background: var(--paper); border: 2px solid var(--border); color: var(--muted-2); position: relative; z-index: 1;
+    transition: all 0.3s; font-weight: 800;
+  }
+  .gp-step.active .gp-dot { background: linear-gradient(135deg, var(--mint-deep), var(--lavender)); border-color: transparent; color: #fff; transform: scale(1.08); box-shadow: var(--shadow-mint); }
+  .gp-step.done .gp-dot { background: var(--primary-50); border-color: var(--mint-deep); color: var(--mint-deep); }
+  .gp-step .lbl { font-size: 0.72rem; font-weight: 700; color: var(--ink); line-height: 1.2; letter-spacing: -0.01em; }
+  .gp-step.active .lbl { color: var(--mint-deep); }
+  .gp-step .who { font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); margin-top: 3px; }
+  .gp-panel { margin-top: 1.75rem; background: var(--paper); border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem 1.75rem; display: grid; grid-template-columns: auto 1fr; gap: 1.4rem; align-items: start; }
+  @media (max-width: 640px) { .gp-panel { grid-template-columns: 1fr; } }
+  .gp-num { font-family: var(--font-serif); font-style: italic; font-size: 3rem; line-height: 1; color: var(--mint-deep); font-weight: 400; }
+  .gp-panel h3 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+  .gp-panel h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); }
+  .gp-panel p { font-size: 0.92rem; color: var(--muted); line-height: 1.65; margin-bottom: 0.85rem; }
+  .gp-actor { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+  .gp-actor.bot { background: rgba(125,188,253,0.14); color: #2f76d6; border: 1px solid rgba(125,188,253,0.3); }
+  .gp-actor.human { background: rgba(166,167,245,0.16); color: #5a5bd6; border: 1px solid rgba(166,167,245,0.32); }
+  .gp-actor.ci { background: var(--primary-50); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.3); }
+  .gp-controls { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.6rem; flex-wrap: wrap; }
+  .gp-btn {
+    display: inline-flex; align-items: center; gap: 7px; height: 42px; padding: 0 16px; border-radius: 10px;
+    border: 1px solid var(--border); background: #fff; color: var(--ink); font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .gp-btn:hover:not(:disabled) { border-color: var(--mint-deep); transform: translateY(-1px); }
+  .gp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .gp-btn.primary { background: var(--mint-2); border-color: transparent; font-weight: 800; box-shadow: var(--shadow-mint); }
+  .gp-btn.primary:hover { box-shadow: var(--shadow-mint-lg); }
+  .gp-progress { flex: 1; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted-2); text-align: right; min-width: 80px; }
+
+  .rulesets { margin-top: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }
+  .ruleset {
+    display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.85rem 1rem; background: #fff; border: 1px solid var(--border);
+    border-radius: 12px; font-size: 0.82rem; color: var(--ink); line-height: 1.4;
+  }
+  .ruleset .lock { color: var(--mint-deep); flex-shrink: 0; margin-top: 1px; }
+  .ruleset b { font-weight: 700; }
+
+  /* ─── RUNTIME / IDENTITY ─── */
+  .runtime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; align-items: start; }
+  @media (max-width: 900px) { .runtime-grid { grid-template-columns: 1fr; } }
+  .terminal { background: #0B1126; border-radius: 18px; overflow: hidden; box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.06); }
+  .term-bar { display: flex; align-items: center; gap: 7px; padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .term-bar .tdot { width: 11px; height: 11px; border-radius: 50%; }
+  .term-bar .r { background: #FF5F57; } .term-bar .y { background: #FEBC2E; } .term-bar .g { background: #28C840; }
+  .term-bar .path { margin-left: 0.6rem; font-family: var(--font-mono); font-size: 0.72rem; color: #7f89a6; }
+  .term-body { padding: 1.2rem 1.3rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.8; color: #cdd6ea; overflow-x: auto; }
+  .term-body .cmt { color: #6b7699; }
+  .term-body .cmd { color: #7CD9C2; }
+  .term-body .flag { color: #A6A7F5; }
+  .term-body .str { color: #F2B766; }
+  .term-body .bot { color: #7DBCFD; }
+  .id-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem; }
+  .id-card .id-top { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.1rem; }
+  .id-app-mark { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, var(--mint), var(--lavender)); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(91,191,164,0.22); }
+  .id-app-mark svg { width: 24px; height: 24px; }
+  .id-app-name { font-size: 1rem; font-weight: 700; color: var(--ink); }
+  .id-app-handle { font-family: var(--font-mono); font-size: 0.74rem; color: var(--mint-text); }
+  .id-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; }
+  .id-list li { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.88rem; color: var(--ink); line-height: 1.5; }
+  .id-list li .chk { flex-shrink: 0; color: var(--mint-deep); font-weight: 800; margin-top: 1px; }
+  .id-list li b { font-weight: 700; }
+  .pull { margin-top: 2.5rem; text-align: center; }
+  .pull q, .pull .q { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.5rem, 3.5vw, 2.3rem); line-height: 1.3; color: var(--ink); max-width: 24ch; margin: 0 auto; display: block; }
+  .pull .q b { color: var(--mint-deep); font-style: italic; font-weight: 400; }
+
+  /* ─── FACTORY ECONOMICS ─── */
+  .econ { margin-top: 2.5rem; background: linear-gradient(135deg, var(--ink) 0%, #1a2348 100%); border-radius: 24px; padding: 2.5rem; color: #fff; position: relative; overflow: hidden; }
+  .econ::before { content: ''; position: absolute; top: -70px; right: -50px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(167,232,217,0.2), transparent 70%); }
+  .econ::after { content: ''; position: absolute; bottom: -80px; left: -40px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(166,167,245,0.16), transparent 70%); }
+  .econ-inner { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+  @media (max-width: 820px) { .econ-inner { grid-template-columns: 1fr; gap: 2rem; } }
+  .econ h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.6rem; letter-spacing: -0.01em; }
+  .econ h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint); }
+  .econ p { color: rgba(255,255,255,0.72); font-size: 0.92rem; line-height: 1.65; margin-bottom: 1.5rem; }
+  .econ-formula { font-family: var(--font-mono); font-size: 0.86rem; color: var(--mint); background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0.85rem 1rem; line-height: 1.7; }
+  .econ-formula .flat { color: #7CD9C2; }
+  .econ-formula .grow { color: #A6A7F5; }
+  .counter-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 1.75rem; }
+  .counter-label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8A93AD; margin-bottom: 0.9rem; }
+  .counter-ctrl { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .counter-btn {
+    width: 44px; height: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06);
+    color: #fff; font-size: 1.4rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, border-color 0.2s; font-family: inherit; line-height: 1;
+  }
+  .counter-btn:hover:not(:disabled) { background: rgba(91,191,164,0.25); border-color: var(--mint-deep); }
+  .counter-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .counter-val { flex: 1; text-align: center; }
+  .counter-val .n { font-size: 2.6rem; font-weight: 800; color: #fff; line-height: 1; letter-spacing: -0.03em; }
+  .counter-val .u { font-size: 0.72rem; color: #8A93AD; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+  .counter-out { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; }
+  .counter-out .co { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 0.85rem 0.7rem; text-align: center; }
+  .counter-out .co .cv { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+  .counter-out .co.plat .cv { color: #7CD9C2; }
+  .counter-out .co.cust .cv { color: #A6A7F5; }
+  .counter-out .co.tot .cv { color: #fff; }
+  .counter-out .co .ck { font-size: 0.6rem; color: #8A93AD; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; line-height: 1.3; }
+
+  /* ─── FOOTER ─── */
+  footer { border-top: 1px solid var(--border); background: #fff; padding: 3rem 2.5rem 2rem; margin-top: 3rem; }
+  .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2.5rem; }
+  @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+  .foot-brand { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.85rem; }
+  .foot-tag { font-size: 0.84rem; color: var(--muted); max-width: 340px; line-height: 1.6; }
+  .foot-col h5 { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); margin-bottom: 0.85rem; }
+  .foot-col a { display: block; font-size: 0.84rem; color: var(--muted); text-decoration: none; padding: 0.28rem 0; transition: color 0.2s; cursor: pointer; }
+  .foot-col a:hover { color: var(--mint-deep); }
+  .foot-base { max-width: 1200px; margin: 2.25rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
+  .foot-base .line { font-size: 0.74rem; color: var(--muted-2); font-family: var(--font-mono); letter-spacing: 0.05em; }
+  .foot-base .tm { font-size: 0.78rem; color: var(--muted); max-width: 880px; line-height: 1.6; }
+
+  /* ─── FADE-UP ─── */
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+    .phone, .eyebrow .dot, .hero-eyebrow .dot { animation: none !important; }
+  }
+
+  :focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 3px; border-radius: 6px; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0.9rem 1.3rem; }
+    .nav-links { gap: 0.9rem; }
+    .nav-links li:nth-child(n+4) { display: none; }
+    section { padding: 5.5rem 1.3rem 3.5rem; }
+    .hero-inner { padding: 7rem 1.3rem 4rem; }
+    .gp, .econ, .ratio { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora"><div class="mint-glow"></div><div class="lav-glow"></div></div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#hero" class="brand" aria-label="Nova — home">
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="brand-n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+      <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#brand-n)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-name">Nova</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#model" data-nav="model">Model</a></li>
+    <li><a href="#fleet" data-nav="fleet">Fleet</a></li>
+    <li><a href="#repos" data-nav="repos">Repos</a></li>
+    <li><a href="#governance" data-nav="governance">Golden Path</a></li>
+    <li><a href="#runtime" data-nav="runtime">Runtime</a></li>
+    <li><a href="#economics" data-nav="economics">Economics</a></li>
+  </ul>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-bg"><div class="g1"></div><div class="g2"></div><div class="g3"></div></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="dot"></span>AI-NATIVE FINTECH · BANKING, REIMAGINED</div>
+    <h1>How <span class="accent">Nova</span> works<span class="dot">.</span></h1>
+    <p class="hero-sub">Nova Financial Technologies builds core banking platforms for banks — <b>operated by a fleet of ~40 AI agents</b>. The agents do the repetitive 80%. Humans own the 20% that matters: accountability, judgement, and every regulatory sign-off. This page shows the whole machine — <b>the fleet, the repositories, and the governance golden path every change must pass through</b>.</p>
+    <div class="hero-cta-row">
+      <a href="#model" class="cta-pill">See the model
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </a>
+      <a href="#governance" class="cta-ghost">Jump to the golden path</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="v">~40 <span class="it">agents</span></div><div class="k">8 departments + 2 glue</div></div>
+      <div class="hero-stat"><div class="v">14 <span class="it">repos</span></div><div class="k">private · one GitHub org</div></div>
+      <div class="hero-stat"><div class="v">80 / 20</div><div class="k">agent work / human oversight</div></div>
+      <div class="hero-stat"><div class="v">0 <span class="it">bypass</span></div><div class="k">protected main, always</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 2. THE MODEL ─── -->
+<section id="model">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE COMPANY MODEL</div>
+    <h2 class="section-title">A <span class="accent">factory</span>, not a consultancy.</h2>
+    <p class="section-lead">Nova is a world-class company where the departments are AI agents and a small elite human team supervises them. Banks describe what they need in plain language; the fleet turns it into specs, code, infrastructure and running software — version-controlled at every step.</p>
+  </div>
+
+  <div class="split fade-up">
+    <div class="split-card no">
+      <div class="split-tag">The consultancy trap</div>
+      <h3>Bespoke, per customer</h3>
+      <p>A consultancy re-builds from scratch for each client. Cost scales with headcount; margin erodes with every new engagement. Nothing compounds.</p>
+      <ul>
+        <li><span class="m">—</span><span>Every bank is a fresh, hand-wired project</span></li>
+        <li><span class="m">—</span><span>Humans do the repetitive build work</span></li>
+        <li><span class="m">—</span><span>Knowledge stays in people's heads</span></li>
+      </ul>
+    </div>
+    <div class="split-card yes">
+      <div class="split-tag">The Nova factory</div>
+      <h3>A <span class="it">reusable</span> product line</h3>
+      <p>Nova separates the <b>platform</b> (the reusable product, a fixed set of repos) from each <b>customer instance</b> (one bank's code, config and infra). The platform is what Nova sells; customer repos are what the product produces.</p>
+      <ul>
+        <li><span class="m">✓</span><span><b>Platform repos</b> stay flat as customers grow</span></li>
+        <li><span class="m">✓</span><span><b>Customer repos</b> multiply per bank (ATIB = 7)</span></li>
+        <li><span class="m">✓</span><span>The fleet learns once, then builds bank #2 faster</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ratio fade-up">
+    <h3>Agents do the <span class="it">80%</span>. Humans own the <span class="it">20%</span>.</h3>
+    <p>This split is not a slogan — it is the ISO 42001 human-oversight control, and the trust story that sells to banks. Each agent does the repetitive 80%; humans own the 20% that is accountability, relationships, judgement, and legal / regulatory / commercial sign-off.</p>
+    <div class="ratio-bar" role="img" aria-label="80 percent agent work, 20 percent human oversight">
+      <div class="ratio-seg agents"><span class="big">80%</span><span class="lbl">AGENT FLEET · the repetitive build &amp; run</span></div>
+      <div class="ratio-seg humans"><span class="big">20%</span><span class="lbl">HUMANS · judgement &amp; sign-off</span></div>
+    </div>
+  </div>
+
+  <div class="grid-3 fade-up" style="margin-top:1.25rem;">
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+      <h3>8 <span class="it">departments</span></h3>
+      <p>Strategy &amp; Management · Marketing · Sales &amp; Growth · Product Office · Engineering · Operations · Customer Success · Corporate — every department a bank has, run by agents.</p>
+    </div>
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m6.4-15.4l-4.2 4.2m-4.4 4.4l-4.2 4.2M23 12h-6m-6 0H1"/></svg></div>
+      <h3>2 <span class="it">glue</span> agents</h3>
+      <p>A <b>Master Orchestrator</b> routes work and fires pipelines across departments; a <b>Meta / Governance</b> agent watches the fleet stays within its tiers — the ISO 42001 watchdog.</p>
+    </div>
+    <div class="card">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.4 0 2.73.32 3.9.9"/></svg></div>
+      <h3>ATIB is <span class="it">customer #1</span></h3>
+      <p>ATIB — a Libyan digital bank — is the first thing the factory produced, not the company itself. Its 7 repos live on the bank's own host (Azure DevOps). Nova is the factory; ATIB is its first output.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 3. THE FLEET ─── -->
+<section id="fleet">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE AGENT FLEET</div>
+    <h2 class="section-title">~40 agents, across <span class="accent">eight</span> departments.</h2>
+    <p class="section-lead">Each agent carries an <b>autonomy tier</b> (how much it may do on its own) and a <b>build wave</b> (when it comes online). Tap a department to see its agents. A world-class AI company has no department run by humans alone — so every function is staffed.</p>
+  </div>
+
+  <div class="legend-row fade-up">
+    <span class="k"><b>Autonomy:</b></span>
+    <span class="k">0 Observe</span><span class="k">1 Explain</span><span class="k">2 Propose <em style="color:var(--mint-text)">(human approves)</em></span><span class="k">3 Act <em style="color:#b5761a">(allowlisted)</em></span><span class="k">4 Human-only <em>(money / attest)</em></span>
+  </div>
+  <div class="legend-row fade-up" style="margin-top:0.5rem;">
+    <span class="k"><b>Build wave:</b></span>
+    <span class="k">🌊1 now</span><span class="k">🌊2 next</span><span class="k">🌊3 later</span>
+  </div>
+
+  <div class="fleet fade-up" id="fleet-grid"></div>
+
+  <div class="glue fade-up">
+    <div class="glue-card">
+      <div class="t">Master <span class="it">Orchestrator</span></div>
+      <p>Routes work across departments, fires the pipelines, manages the human-approval gates. The conductor of the fleet.</p>
+    </div>
+    <div class="glue-card">
+      <div class="t">Meta / <span class="it">Governance</span></div>
+      <p>Watches the fleet: are agents staying within their tier and guardrails? Audited by Compliance — this is the ISO 42001 oversight loop.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 4. REPO ARCHITECTURE ─── -->
+<section id="repos">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE REPOSITORY ARCHITECTURE</div>
+    <h2 class="section-title">Fourteen private repos, <span class="accent">one</span> org.</h2>
+    <p class="section-lead">Separation of concerns means each concern is its own repo — independently versioned, tested and deployed. Twelve platform repos in four groups form the product; a wrapper and the website round out the org. Customer repos are a separate layer that grows per bank. Click any repo to inspect it.</p>
+  </div>
+
+  <div class="repo-wrap fade-up">
+    <div class="repo-groups" id="repo-groups"></div>
+    <div>
+      <div class="repo-detail" id="repo-detail" aria-live="polite">
+        <div class="rd-tag">Repository</div>
+        <div class="rd-name">Select a repo</div>
+        <div class="rd-role">Hover or click a node</div>
+        <p class="rd-desc rd-hint">Every node is a real private repository in the <b>nova-ft</b> GitHub org. Click one to see what it owns and why it exists as its own concern.</p>
+      </div>
+
+      <div class="customer-layer">
+        <div class="ch">
+          <span class="t">Customer layer — <span class="it">grows per bank</span></span>
+          <span class="badge-amber">Off-platform</span>
+        </div>
+        <p>Each bank gets its own set of repos on its own chosen host — <b>own tenant, own codebase, own infra</b>. ATIB (customer #1) has 7, on Azure DevOps. Platform count stays flat; only this layer multiplies.</p>
+        <div class="customer-nodes">
+          <span class="customer-node"><span class="rdot"></span>atib-backend-services</span>
+          <span class="customer-node"><span class="rdot"></span>atib-mobile-app</span>
+          <span class="customer-node"><span class="rdot"></span>atib-web-app</span>
+          <span class="customer-node"><span class="rdot"></span>atib-infrastructure-bicep</span>
+          <span class="customer-node"><span class="rdot"></span>atib-architecture-docs</span>
+          <span class="customer-node"><span class="rdot"></span>atib-technical-specs</span>
+          <span class="customer-node"><span class="rdot"></span>atib-testing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 5. GOVERNANCE / GOLDEN PATH ─── -->
+<section id="governance">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>GOVERNANCE · THE GOLDEN PATH</div>
+    <h2 class="section-title">Every change walks the <span class="accent">same</span> path.</h2>
+    <p class="section-lead">Agent or human, there is exactly one way a change reaches <span style="font-family:var(--font-mono);font-size:0.92em;">main</span>. It is protected by rulesets on every repo — <b>no direct push for anyone, not even admins or bots</b>. Step through the flow below.</p>
+  </div>
+
+  <div class="gp fade-up">
+    <div class="gp-track" id="gp-track" role="tablist" aria-label="Golden path steps"></div>
+    <div class="gp-panel" id="gp-panel"></div>
+    <div class="gp-controls">
+      <button class="gp-btn" id="gp-prev" aria-label="Previous step">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> Prev
+      </button>
+      <button class="gp-btn primary" id="gp-next" aria-label="Next step">Next
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <button class="gp-btn" id="gp-play" aria-label="Auto-advance the flow">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" id="gp-play-icon"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+        <span id="gp-play-label">Auto-play</span>
+      </button>
+      <span class="gp-progress" id="gp-progress"></span>
+    </div>
+  </div>
+
+  <div class="rulesets fade-up" id="rulesets"></div>
+</section>
+
+<!-- ─── 6. IDENTITY & RUNTIME ─── -->
+<section id="runtime">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>AGENT IDENTITY &amp; RUNTIME</div>
+    <h2 class="section-title">Agents <span class="accent">propose</span>. Humans <span class="accent">dispose</span>.</h2>
+    <p class="section-lead">Agents don't get a person's login. They act as a GitHub App with its own identity — authoring pull requests, never impersonating a human, and never able to bypass the gate. The runtime toolkit that mints their credentials and opens their PRs lives in <span style="font-family:var(--font-mono);font-size:0.9em;">nova-agent-runtime/runtime/</span>.</p>
+  </div>
+
+  <div class="runtime-grid fade-up">
+    <div class="terminal" aria-label="Example agent runtime commands">
+      <div class="term-bar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="path">nova-agent-runtime/runtime</span></div>
+      <div class="term-body">
+<span class="cmt"># 1 · mint a short-lived token for the GitHub App</span><br>
+<span class="cmd">./gh-app-auth.sh</span> <span class="flag">--repo</span> <span class="str">nova-platform-backend</span><br>
+<span class="cmt">  → installation token (expires in ~1h)</span><br>
+<br>
+<span class="cmt"># 2 · branch, commit, push &amp; open the PR as the bot</span><br>
+<span class="cmd">./open-pr.sh</span> <span class="flag">--title</span> <span class="str">"feat: add payout webhook"</span> \<br>
+&nbsp;&nbsp;<span class="flag">--branch</span> <span class="str">agent/payout-webhook</span><br>
+<span class="cmt">  → PR #128 opened by</span> <span class="bot">nova-ft-fleet-agent[bot]</span><br>
+<span class="cmt">  → verify CI running · awaiting human approval</span>
+      </div>
+    </div>
+
+    <div class="id-card">
+      <div class="id-top">
+        <div class="id-app-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 1 3 3v1h1a3 3 0 0 1 3 3 3 3 0 0 1 0 6v1a3 3 0 0 1-3 3h-1v-1a3 3 0 0 0-6 0v1H8a3 3 0 0 1-3-3v-1a3 3 0 0 1 0-6V9a3 3 0 0 1 3-3h1V5a3 3 0 0 1 3-3z"/><circle cx="9" cy="11" r="1" fill="var(--ink)"/><circle cx="15" cy="11" r="1" fill="var(--ink)"/></svg>
+        </div>
+        <div>
+          <div class="id-app-name">Nova FT Fleet Agent</div>
+          <div class="id-app-handle">nova-ft-fleet-agent[bot]</div>
+        </div>
+      </div>
+      <ul class="id-list">
+        <li><span class="chk">✓</span><span>A single <b>GitHub App</b> is the identity for the whole fleet — auditable, revocable, scoped by installation.</span></li>
+        <li><span class="chk">✓</span><span>Agents <b>author</b> pull requests as the bot. They <b>never impersonate a human</b> and <b>never bypass the gate</b>.</span></li>
+        <li><span class="chk">✓</span><span><span style="font-family:var(--font-mono);font-size:0.85em;">gh-app-auth.sh</span> mints a short-lived token; <span style="font-family:var(--font-mono);font-size:0.85em;">open-pr.sh</span> commits, pushes and opens the PR.</span></li>
+        <li><span class="chk">✓</span><span>A <b>human approves</b> before anything merges. That approval is the 20% — the accountable act.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull fade-up"><span class="q">The bot can open the door. <b>Only a human can walk a change through it.</b></span></div>
+</section>
+
+<!-- ─── 7. FACTORY ECONOMICS ─── -->
+<section id="economics">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>FACTORY ECONOMICS</div>
+    <h2 class="section-title">Platform stays flat. Only <span class="accent">customers</span> multiply.</h2>
+    <p class="section-lead">This is the factory economics in repo form. The 12 platform repos are a fixed cost — they don't grow when a bank signs. Each new bank adds a fixed set of 7 customer repos. Drag the counter to feel it.</p>
+  </div>
+
+  <div class="econ fade-up">
+    <div class="econ-inner">
+      <div>
+        <h3>Twelve platform repos, <span class="it">once</span>.</h3>
+        <p>The agent fleet, the human surfaces, the portable banking platform and governance each evolve independently — but their count never changes as the business scales. Every bank after that is just <b>+7</b>, provisioned by the agents.</p>
+        <div class="econ-formula">
+          total = <span class="flat">12 platform</span> <span style="color:#8A93AD">(flat)</span> + <span class="grow">7 × N</span> <span style="color:#8A93AD">customer repos</span>
+        </div>
+      </div>
+      <div class="counter-box">
+        <div class="counter-label">Banks onboarded · N</div>
+        <div class="counter-ctrl">
+          <button class="counter-btn" id="c-minus" aria-label="Fewer banks">−</button>
+          <div class="counter-val">
+            <div class="n" id="c-n">1</div>
+            <div class="u" id="c-u">bank · ATIB</div>
+          </div>
+          <button class="counter-btn" id="c-plus" aria-label="More banks">+</button>
+        </div>
+        <div class="counter-out">
+          <div class="co plat"><div class="cv">12</div><div class="ck">Platform repos</div></div>
+          <div class="co cust"><div class="cv" id="c-cust">7</div><div class="ck">Customer repos</div></div>
+          <div class="co tot"><div class="cv" id="c-tot">19</div><div class="ck">Total repos</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="section-lead fade-up" style="margin-top:1.25rem;font-size:0.86rem;">Plus two org-level repos — the <span style="font-family:var(--font-mono);font-size:0.9em;">nova-ft</span> wrapper and <span style="font-family:var(--font-mono);font-size:0.9em;">nova-website</span> — making 14 private repos in the org today. They don't scale with customers either.</p>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="foot-brand">
+        <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="foot-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+          <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#foot-g)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name" style="font-size: 1.35rem;">Nova</span>
+      </div>
+      <p class="foot-tag">Nova Financial Technologies Limited. An AI-native UK FinTech building core banking platforms for banks — Banking, Reimagined.</p>
+    </div>
+    <div class="foot-col">
+      <h5>On this page</h5>
+      <a href="#model">The company model</a>
+      <a href="#fleet">The agent fleet</a>
+      <a href="#repos">Repository architecture</a>
+      <a href="#governance">The golden path</a>
+    </div>
+    <div class="foot-col">
+      <h5>More</h5>
+      <a href="#runtime">Identity &amp; runtime</a>
+      <a href="#economics">Factory economics</a>
+      <a href="#hero">Back to top</a>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span class="line">© 2026 Nova Financial Technologies Limited. All rights reserved.</span>
+    <span class="line">Registered in England &amp; Wales · Company no. 17253785</span>
+    <span class="tm">"Nova", "Nova FT", the Nova "n." wordmark and the Nova logo are trade marks of Nova Financial Technologies Limited. The contents of this page — including all text, design, logos, illustrations and code — are protected by copyright and other intellectual property rights and may not be copied, reproduced or used without our prior written consent.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ─────────── DATA: FLEET ─────────── */
+  var DEPTS = [
+    { n: "Strategy & Management", i: 1, agents: [
+      { a: "Strategy Agent", j: "Market/competitor analysis, positioning, scenarios", t: "1", w: "3" },
+      { a: "Planning / OKR Agent", j: "Strategy → OKRs, roadmap, resourcing", t: "2", w: "3" },
+      { a: "Board / Investor Agent", j: "Board packs, investor updates, data-room", t: "2", w: "3" },
+      { a: "BizOps / Metrics Agent", j: "Headline metrics, unit economics, models", t: "1", w: "2" },
+      { a: "Licence & Entitlement Agent", j: "Entitlements, 3rd-party licences, per-customer stack profiles", t: "1–2", w: "2" },
+      { a: "Finance / Billing Agent", j: "Invoicing, usage metering, revenue recognition, cash-flow", t: "2", w: "2" }
+    ]},
+    { n: "Marketing", i: 2, agents: [
+      { a: "Content Agent", j: "Blog, whitepapers, case studies, thought leadership", t: "2", w: "3" },
+      { a: "Brand / Design Agent", j: "On-brand assets, decks, one-pagers", t: "2", w: "3" },
+      { a: "Demand-Gen Agent", j: "Campaigns, landing pages, email, SEO", t: "2", w: "3" },
+      { a: "Market-Intel Agent", j: "Region/competitor trends → Sales + Strategy", t: "1", w: "3" }
+    ]},
+    { n: "Sales & Growth", i: 3, agents: [
+      { a: "Lead-Gen Agent", j: "Find ICP banks in target regions, enrich", t: "1", w: "2" },
+      { a: "Qualification Agent", j: "Fit-score (BANT + banking), discovery prep", t: "1", w: "2" },
+      { a: "Sales-Engineer Agent", j: "Demos, security questionnaires, RFP/RFI", t: "2", w: "2" },
+      { a: "Proposal Agent", j: "Tailored Proposal.md + SOW.md from pricing model", t: "2", w: "2" },
+      { a: "Deal-Desk Agent", j: "Pricing config, contract drafting, channel structuring", t: "2–4", w: "2" },
+      { a: "Pipeline / Forecast Agent", j: "Pipeline, conversion, forecast, stall alerts", t: "1", w: "2" }
+    ]},
+    { n: "Product Office", i: 4, agents: [
+      { a: "Requirements Agent", j: "The portal chatbot — intake + clarification loop", t: "2", w: "2" },
+      { a: "PRD Agent", j: "PRD.md · UserStories.md · AcceptanceCriteria.md", t: "2", w: "2" },
+      { a: "Solution-Architect Agent", j: "Architecture.md · SequenceDiagram.md · affected services", t: "2", w: "2" },
+      { a: "Risk & Estimation Agent", j: "RiskAssessment.md · EdgeCases.md · BusinessFlows.md", t: "2", w: "2" }
+    ]},
+    { n: "Engineering", i: 5, agents: [
+      { a: "Orchestrator Agent", j: "Decompose spec → fan-out → collect PRs", t: "2", w: "2" },
+      { a: "Backend Agent", j: "UAS/CBS/PGS/NS/IS/TMS/PMS services", t: "2", w: "1" },
+      { a: "Mobile Agent", j: "React Native / Expo app", t: "2", w: "1" },
+      { a: "Web Agent", j: "Back-office / portal front-ends", t: "2", w: "1" },
+      { a: "Infra Agent", j: "Multi-cloud provisioning — Azure/AWS/OCI/on-prem", t: "3", w: "2" },
+      { a: "Test / QA Agent", j: "Full E2E + QA suites", t: "2", w: "1" },
+      { a: "Reviewer Agent", j: "Adversarial PR review vs spec + reviews/ corpus", t: "2", w: "1" },
+      { a: "Data / ML-Ops Agent", j: "KYC face-match, fraud models, pipelines, model cards", t: "2", w: "2" }
+    ]},
+    { n: "Operations", i: 6, agents: [
+      { a: "SRE / Monitoring Agent", j: "Observe→detect→explain→propose→(allowlist) remediate", t: "0–3", w: "1" },
+      { a: "Deployment Agent", j: "Drive CI/CD, canary, rollback", t: "3", w: "1" },
+      { a: "Provisioning / Onboarding Agent", j: "Stand up a new bank's isolated stack", t: "3", w: "2" },
+      { a: "Security Agent", j: "Pen-test checklist, secret hygiene, vuln scanning", t: "2", w: "1" },
+      { a: "Compliance Agent", j: "Continuous audit vs ISO27001/SOC2/42001/PCI; PR-gate; evidence", t: "0–3", w: "1" },
+      { a: "Regulatory-Strategy Agent", j: "Multi-market readiness, licensing paths, Consumer Duty", t: "1–2", w: "2" }
+    ]},
+    { n: "Customer Success", i: 7, agents: [
+      { a: "Support L1 — Deflect Agent", j: "FAQ from docs + error dictionary (≥70% deflection)", t: "3", w: "1" },
+      { a: "Support L2 — Diagnose Agent", j: "Read-only log lookup, correlate, resolve/escalate", t: "2", w: "1" },
+      { a: "Support L3 — Resolve Agent", j: "Propose fix/config → route to Engineering", t: "2", w: "2" },
+      { a: "Onboarding Agent (CS)", j: "Guide a bank through setup → UAT → go-live → hypercare", t: "2", w: "2" },
+      { a: "Customer-Health Agent", j: "SLA attainment, usage growth, churn/renewal/upsell", t: "1", w: "2" }
+    ]},
+    { n: "Corporate", i: 8, agents: [
+      { a: "Legal / Contracts Agent", j: "Draft/track contracts, DPAs, NDAs; IP-assignment; flag terms", t: "2–4", w: "3" },
+      { a: "People / HR Agent", j: "Onboarding, right-to-work, equity/options admin", t: "2", w: "3" },
+      { a: "Knowledge / Corpus Agent", j: "Curate the shared brain; write learnings back; flag stale memory", t: "1", w: "2" }
+    ]}
+  ];
+
+  function tierClass(t) {
+    if (t.indexOf("4") !== -1) return "t4";
+    if (t.indexOf("3") !== -1) return "t3";
+    return "";
+  }
+
+  var fleetGrid = document.getElementById("fleet-grid");
+  DEPTS.forEach(function (d, idx) {
+    var dept = document.createElement("div");
+    dept.className = "dept" + (idx === 0 ? " open" : "");
+
+    var rows = d.agents.map(function (ag) {
+      return '<div class="agent-row">' +
+        '<div class="agent-name">' + ag.a + '<span class="agent-job">' + ag.j + '</span></div>' +
+        '<span class="chip chip-tier ' + tierClass(ag.t) + '" title="Autonomy tier">T' + ag.t + '</span>' +
+        '<span class="chip chip-wave w' + ag.w + '" title="Build wave">🌊' + ag.w + '</span>' +
+        '</div>';
+    }).join("");
+
+    dept.innerHTML =
+      '<button class="dept-head" aria-expanded="' + (idx === 0 ? "true" : "false") + '">' +
+        '<span class="dept-badge">' + d.i + '</span>' +
+        '<span class="dept-meta"><span class="dept-name">' + d.n + '</span>' +
+        '<span class="dept-count">' + d.agents.length + ' agents</span></span>' +
+        '<svg class="dept-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>' +
+      '</button>' +
+      '<div class="dept-body"><div class="dept-body-inner">' + rows + '</div></div>';
+
+    var btn = dept.querySelector(".dept-head");
+    btn.addEventListener("click", function () {
+      var isOpen = dept.classList.toggle("open");
+      btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+    fleetGrid.appendChild(dept);
+  });
+
+  /* ─────────── DATA: REPOS ─────────── */
+  var GROUPS = [
+    { g: "A", title: "Agent fleet", sub: "the factory floor", color: "#5BBFA4", repos: [
+      { r: "nova-agents", star: true, role: "Agent charters", d: "The ~40 agent charters, skills and memory across all 8 departments — the fleet definitions. Build this first; it is the factory floor." },
+      { r: "nova-orchestration", role: "How agents run together", d: "Triggers, pipelines, gates and the master orchestrator — the wiring that fires agents in the right order and holds the human-approval checkpoints." },
+      { r: "nova-agent-runtime", role: "Execution substrate", d: "The runtime that executes agents: shared libs, tool scoping, guardrails, and the runtime/ toolkit (gh-app-auth.sh, open-pr.sh) that lets agents open PRs as the bot." }
+    ]},
+    { g: "B", title: "Surfaces", sub: "the apps humans use", color: "#7DBCFD", repos: [
+      { r: "nova-dashboard", role: "Internal cockpit", d: "The internal cockpit where Nova staff supervise the fleet, watch the work queue, and approve gates. Different runtime from the fleet, so its own repo." },
+      { r: "nova-onboarding-portal", role: "Customer-facing", d: "The customer-facing portal: form/chatbot → specs, approvals, UAT and support. The Requirements Agent lives behind it as the intake chatbot." }
+    ]},
+    { g: "C", title: "Product masters", sub: "the portable banking platform", color: "#A6A7F5", repos: [
+      { r: "nova-platform-backend", role: "Reusable money core", d: "The customer-agnostic backend master — reusable banking services the fleet clones and configures per bank." },
+      { r: "nova-platform-mobile", role: "Reusable mobile master", d: "The reusable React Native / Expo mobile app master, themed per bank." },
+      { r: "nova-platform-web", role: "Reusable web master", d: "The reusable back-office / web master front-end." },
+      { r: "nova-platform-infra", role: "Multi-cloud IaC", d: "Multi-cloud infrastructure-as-code profiles (Azure/AWS/OCI/on-prem) plus the deployment contract — how a bank's isolated stack is stood up anywhere." },
+      { r: "nova-platform-architecture", role: "The rulebook", d: "The architecture rulebook and spec templates — the reusable guardrails that make AI codegen bank-grade instead of random. The Solution-Architect Agent's source of truth." }
+    ]},
+    { g: "D", title: "Governance & shared", sub: "the guardrails", color: "#0E1530", repos: [
+      { r: "nova-compliance", role: "GRC-as-code", d: "Control catalogue, evidence store and GRC-as-code — the home of the Compliance and Security agents' continuous audit against ISO 27001 / SOC 2 / ISO 42001 / PCI." },
+      { r: "nova-shared", role: "Reusable CI & house-style", d: "Shared libraries, house-style, guardrails, deployment-contract schemas — and the reusable CI workflow every repo's verify job calls." }
+    ]},
+    { g: "O", title: "Org-level", sub: "wrapper & website", color: "#F2B766", repos: [
+      { r: "nova-ft", role: "Company wrapper", d: "The org wrapper: company/business/technology planning docs plus a private, team-only Wiki. Aggregates the platform repos as submodules." },
+      { r: "nova-website", role: "Marketing site", d: "The public marketing site — Banking, Reimagined. On-brand front door for Nova Financial Technologies." }
+    ]}
+  ];
+
+  var groupsEl = document.getElementById("repo-groups");
+  var detailEl = document.getElementById("repo-detail");
+  var allNodes = [];
+
+  function showRepo(repo, group, node) {
+    allNodes.forEach(function (n) { n.classList.remove("sel"); });
+    if (node) node.classList.add("sel");
+    detailEl.innerHTML =
+      '<div class="rd-tag">Group ' + group.g + ' · ' + group.title + '</div>' +
+      '<div class="rd-name">' + repo.r + '</div>' +
+      '<div class="rd-role">' + repo.role + '</div>' +
+      '<p class="rd-desc">' + repo.d + '</p>';
+  }
+
+  GROUPS.forEach(function (group) {
+    var gEl = document.createElement("div");
+    gEl.className = "repo-group";
+    var nodesHtml = "";
+    gEl.innerHTML =
+      '<div class="repo-group-h">' +
+        '<span class="repo-group-tag ' + group.g + '">' + group.g + '</span>' +
+        '<span class="repo-group-title">' + group.title + ' <span>· ' + group.sub + '</span></span>' +
+      '</div><div class="repo-nodes"></div>';
+    var nodesWrap = gEl.querySelector(".repo-nodes");
+
+    group.repos.forEach(function (repo) {
+      var node = document.createElement("button");
+      node.className = "repo-node" + (repo.star ? " star" : "");
+      node.innerHTML = '<span class="rdot" style="background:' + group.color + '"></span>' + repo.r + (repo.star ? ' ★' : '');
+      node.addEventListener("click", function () { showRepo(repo, group, node); });
+      node.addEventListener("mouseenter", function () { showRepo(repo, group, node); });
+      node.addEventListener("focus", function () { showRepo(repo, group, node); });
+      nodesWrap.appendChild(node);
+      allNodes.push(node);
+    });
+    groupsEl.appendChild(gEl);
+  });
+  // Seed detail with the flagship repo
+  showRepo(GROUPS[0].repos[0], GROUPS[0], allNodes[0]);
+
+  /* ─────────── DATA: GOLDEN PATH ─────────── */
+  var STEPS = [
+    { s: "Branch", who: "agent / human", ico: "⌥", actor: "bot", actorLbl: "agent bot",
+      h: "Cut a branch off main",
+      p: "Work never happens on main. An agent (or a human) cuts a topic branch. main itself is untouchable — no one, not even an admin, pushes to it directly." },
+    { s: "Open PR", who: "agent bot", ico: "⇡", actor: "bot", actorLbl: "nova-ft-fleet-agent[bot]",
+      h: "Open a pull request",
+      p: "The change is proposed as a pull request, authored by the Nova FT Fleet Agent GitHub App — never impersonating a human. open-pr.sh commits, pushes and opens it. A PR is mandatory; there is no other route in." },
+    { s: "CI verify", who: "automated", ico: "✓", actor: "ci", actorLbl: "verify check",
+      h: "The verify gate must pass",
+      p: "A required verify CI check runs — the same job in every repo, from the reusable workflow in nova-shared. If verify is red, the merge button is disabled for everyone. Secret scanning and push protection run too." },
+    { s: "Human approves", who: "human only", ico: "◆", actor: "human", actorLbl: "human reviewer",
+      h: "A human approves",
+      p: "This is the accountable 20%. A human reviews and approves the PR. The agent proposed; the human disposes. No bypass actors exist — approval cannot be skipped by anyone." },
+    { s: "Squash-merge", who: "on approval", ico: "⤳", actor: "human", actorLbl: "squash only",
+      h: "Squash-merge into main",
+      p: "Merge is squash-only, keeping main a clean, linear history — no merge commits, no force-push. Only now does the change land on protected main." },
+    { s: "Auto-delete", who: "automated", ico: "⌦", actor: "ci", actorLbl: "automated",
+      h: "Branch auto-deleted",
+      p: "On merge, the branch is deleted automatically. The repo stays tidy, the record is the squashed commit + the PR, and the next change starts the path over again." }
+  ];
+
+  var track = document.getElementById("gp-track");
+  var panel = document.getElementById("gp-panel");
+  var progressEl = document.getElementById("gp-progress");
+  var prevBtn = document.getElementById("gp-prev");
+  var nextBtn = document.getElementById("gp-next");
+  var playBtn = document.getElementById("gp-play");
+  var playIcon = document.getElementById("gp-play-icon");
+  var playLabel = document.getElementById("gp-play-label");
+  var cur = 0, timer = null;
+
+  STEPS.forEach(function (st, i) {
+    var b = document.createElement("button");
+    b.className = "gp-step";
+    b.setAttribute("role", "tab");
+    b.innerHTML =
+      '<span class="gp-dot">' + st.ico + '</span>' +
+      '<span class="lbl">' + st.s + '</span>' +
+      '<span class="who">' + st.who + '</span>';
+    b.addEventListener("click", function () { stopPlay(); go(i); });
+    track.appendChild(b);
+  });
+  var stepEls = track.querySelectorAll(".gp-step");
+
+  function go(i) {
+    cur = (i + STEPS.length) % STEPS.length;
+    stepEls.forEach(function (el, k) {
+      el.classList.toggle("active", k === cur);
+      el.classList.toggle("done", k < cur);
+      el.setAttribute("aria-selected", k === cur ? "true" : "false");
+    });
+    var st = STEPS[cur];
+    panel.innerHTML =
+      '<div class="gp-num">' + (cur + 1) + '</div>' +
+      '<div><h3>' + st.h + '</h3><p>' + st.p + '</p>' +
+      '<span class="gp-actor ' + st.actor + '">' + st.actorLbl + '</span></div>';
+    progressEl.textContent = "Step " + (cur + 1) + " / " + STEPS.length;
+    prevBtn.disabled = false; nextBtn.disabled = false;
+  }
+  prevBtn.addEventListener("click", function () { stopPlay(); go(cur - 1); });
+  nextBtn.addEventListener("click", function () { stopPlay(); go(cur + 1); });
+
+  function startPlay() {
+    playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+    playLabel.textContent = "Pause";
+    timer = setInterval(function () { go(cur + 1); }, 2600);
+  }
+  function stopPlay() {
+    if (timer) { clearInterval(timer); timer = null; }
+    playIcon.innerHTML = '<polygon points="6 4 20 12 6 20 6 4"></polygon>';
+    playLabel.textContent = "Auto-play";
+  }
+  playBtn.addEventListener("click", function () { timer ? stopPlay() : startPlay(); });
+  go(0);
+
+  /* ─────────── RULESETS ─────────── */
+  var RULES = [
+    "No direct push to <b>main</b> — for anyone, even admins &amp; bots",
+    "A <b>pull request</b> is required for every change",
+    "The <b>verify</b> CI check must pass",
+    "<b>Linear history</b> — no merge commits",
+    "<b>Squash-only</b> merges",
+    "<b>No force-push</b> to main",
+    "Branch <b>auto-deleted</b> on merge",
+    "<b>No bypass actors</b> — the gate has no exceptions",
+    "<b>Secret scanning</b> + push protection on all repos",
+    "A <b>nova-team</b> holds access · org default = none · Wiki private"
+  ];
+  var rulesEl = document.getElementById("rulesets");
+  RULES.forEach(function (r) {
+    var d = document.createElement("div");
+    d.className = "ruleset";
+    d.innerHTML = '<svg class="lock" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>' + r + '</span>';
+    rulesEl.appendChild(d);
+  });
+
+  /* ─────────── FACTORY COUNTER ─────────── */
+  var N = 1;
+  var nEl = document.getElementById("c-n");
+  var uEl = document.getElementById("c-u");
+  var custEl = document.getElementById("c-cust");
+  var totEl = document.getElementById("c-tot");
+  var minus = document.getElementById("c-minus");
+  var plus = document.getElementById("c-plus");
+  function renderCounter() {
+    var cust = 7 * N, tot = 12 + cust;
+    nEl.textContent = N;
+    uEl.textContent = N === 1 ? "bank · ATIB" : N + " banks";
+    custEl.textContent = cust;
+    totEl.textContent = tot;
+    minus.disabled = N <= 0;
+    plus.disabled = N >= 99;
+  }
+  minus.addEventListener("click", function () { if (N > 0) { N--; renderCounter(); } });
+  plus.addEventListener("click", function () { if (N < 99) { N++; renderCounter(); } });
+  renderCounter();
+
+  /* ─────────── FADE-UP ─────────── */
+  var fade = document.querySelectorAll(".fade-up");
+  if (!("IntersectionObserver" in window)) {
+    fade.forEach(function (e) { e.classList.add("visible"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); } });
+    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+    fade.forEach(function (e) { io.observe(e); });
+  }
+
+  /* ─────────── SCROLL-SPY NAV ─────────── */
+  var navLinks = document.querySelectorAll(".nav-links a[data-nav]");
+  var sections = ["model", "fleet", "repos", "governance", "runtime", "economics"].map(function (id) { return document.getElementById(id); });
+  function spy() {
+    var pos = window.scrollY + 130;
+    var active = null;
+    sections.forEach(function (s) { if (s && s.offsetTop <= pos) active = s.id; });
+    navLinks.forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-nav") === active); });
+  }
+  window.addEventListener("scroll", spy, { passive: true });
+  spy();
+})();
+</script>
+</body>
+</html>
