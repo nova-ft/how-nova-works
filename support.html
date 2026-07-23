@@ -193,6 +193,56 @@ section{padding:74px 0;scroll-margin-top:70px}
 .canary .seg.on{background:var(--mint);border-color:var(--mint-deep);color:var(--ink)}
 .canary .seg.roll{background:rgba(209,36,47,.1);border-color:rgba(209,36,47,.4);color:var(--critical)}
 
+/* ===== Resilience & DR ===== */
+.tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:26px}
+.tcard{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow-card)}
+.tcard .thead{display:flex;align-items:center;gap:8px}
+.tcard .tname{font-size:.7rem;font-weight:700;letter-spacing:.02em;padding:4px 10px;border-radius:999px;color:var(--ink)}
+.tcard.t0 .tname{background:rgba(209,36,47,.14);color:var(--critical);border:1px solid rgba(209,36,47,.35)}
+.tcard.t1 .tname{background:rgba(242,183,102,.16);color:#8a5a17;border:1px solid rgba(242,183,102,.5)}
+.tcard.t2 .tname{background:rgba(125,188,253,.16);color:#2f6ec0;border:1px solid rgba(125,188,253,.45)}
+.tcard.t3 .tname{background:rgba(91,191,164,.14);color:var(--mint-text);border:1px solid rgba(91,191,164,.3)}
+.tcard .twhat{margin:12px 0 14px;font-size:.86rem;color:var(--muted)}
+.tcard .tobj{display:flex;gap:10px}
+.tcard .tobj div{flex:1;background:var(--paper);border:1px solid var(--border);border-radius:10px;padding:8px 10px}
+.tcard .tobj .k{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tcard .tobj .v{font-family:var(--mono);font-size:.92rem;font-weight:600;color:var(--ink);margin-top:2px}
+.floor-note{margin-top:16px;background:rgba(91,191,164,.1);border:1px dashed var(--mint-deep);border-radius:12px;padding:12px 16px;font-size:.86rem;color:#3a4160}
+.floor-note b{color:var(--mint-text)}
+.floor-note code{font-family:var(--mono);font-size:.82em;background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:5px;color:var(--mint-text)}
+.dr-block{margin-top:40px}
+.dr-block .eyebrow{margin-bottom:8px}
+.dr-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px}
+.drstep{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px;position:relative;cursor:pointer;text-align:left;transition:border-color .18s,box-shadow .18s,transform .18s}
+.drstep:hover,.drstep:focus-visible,.drstep.active{border-color:var(--mint-deep);box-shadow:var(--shadow-soft);transform:translateY(-3px)}
+.drstep .num{font-family:var(--mono);font-size:.72rem;color:var(--mint-text);font-weight:600}
+.drstep h4{margin:8px 0 6px;font-size:.95rem;font-weight:800;letter-spacing:-.01em}
+.drstep p{margin:0;font-size:.78rem;color:var(--muted)}
+.drstep .arrow{position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:var(--mint-deep);font-size:1.15rem;z-index:2}
+@media(max-width:760px){.drstep .arrow{display:none}}
+.dr-detail{margin-top:20px;background:var(--ink);color:#e9edf9;border-radius:var(--radius);padding:22px;min-height:96px}
+.dr-detail .tag{font-family:var(--mono);font-size:.75rem;color:var(--mint)}
+.dr-detail h4{color:#fff;font-size:1.15rem;margin:8px 0 8px}
+.dr-detail p{margin:0;color:#c3cae0;max-width:70ch}
+.gate.resil{margin-top:20px}
+.fleet-card{margin-top:40px;background:var(--deep);color:#e6ebfa;border-radius:24px;padding:28px;box-shadow:0 30px 70px -30px rgba(11,17,38,.7)}
+.fleet-card h3{font-size:1.3rem;color:#fff}
+.fleet-card h3 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--mint)}
+.fleet-card .flead{margin:12px 0 6px;color:#c3cae0;max-width:72ch;font-size:.95rem}
+.fleet-card .flead b{color:#fff}
+.fleet-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:22px}
+.fbox{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px}
+.fbox .who{font-family:var(--mono);font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mint)}
+.fbox h5{margin:8px 0 6px;font-size:.98rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+.fbox p{margin:0;font-size:.82rem;color:#aeb7d6}
+.killswitch{margin-top:22px;display:flex;gap:12px;align-items:flex-start;background:rgba(209,36,47,.14);border:1px solid rgba(209,36,47,.4);border-radius:14px;padding:16px 18px}
+.killswitch b{color:#fff}
+.killswitch .body{font-size:.88rem;color:#e6c3c5}
+.killswitch .body b{color:#ffd9db}
+.risk-note{margin-top:24px;font-size:.9rem;color:var(--muted);display:flex;gap:10px;align-items:flex-start}
+.risk-note b{color:var(--ink)}
+.risk-note .rtag{flex-shrink:0;font-size:.7rem;font-weight:700;color:#5657c9;background:rgba(166,167,245,.16);border:1px solid rgba(166,167,245,.4);padding:4px 10px;border-radius:999px}
+
 /* ===== Footer ===== */
 footer{background:var(--ink);color:#c3cae0;padding:56px 0 34px}
 footer .fgrid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
@@ -214,6 +264,7 @@ footer .tm{margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,25
       <a href="#monfix">Monitoring → fix</a>
       <a href="#dashboard">Live monitoring</a>
       <a href="#provision">Provision &amp; deploy</a>
+      <a href="#resilience">Resilience &amp; DR</a>
     </div>
   </div>
 </nav>
@@ -428,6 +479,123 @@ footer .tm{margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,25
   </div>
 </section>
 
+<!-- RESILIENCE & DR -->
+<section id="resilience" class="paperbg">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Resilience &amp; disaster recovery</div>
+      <h2>Keep banks running, <em>recover fast</em></h2>
+      <p>Operations owns resilience end to end. It keeps banks running and recovers fast — DR is a first-class gate, not an afterthought.</p>
+    </div>
+
+    <div class="dr-block" style="margin-top:26px">
+      <div class="eyebrow">Service-tier RTO / RPO</div>
+      <div class="tier-grid">
+        <div class="tcard t0">
+          <div class="thead"><span class="tname">Tier-0</span></div>
+          <div class="twhat">Money-core &amp; auth — ledger, payments, authentication. Tightest objectives; failure is customer-visible instantly.</div>
+          <div class="tobj">
+            <div><div class="k">RTO</div><div class="v">minutes</div></div>
+            <div><div class="k">RPO</div><div class="v">near-zero</div></div>
+          </div>
+        </div>
+        <div class="tcard t1">
+          <div class="thead"><span class="tname">Tier-1</span></div>
+          <div class="twhat">Core customer-facing services — statements, notifications, FX quotes. Fast recovery, minimal data loss.</div>
+          <div class="tobj">
+            <div><div class="k">RTO</div><div class="v">≤ 1h</div></div>
+            <div><div class="k">RPO</div><div class="v">≤ 5min</div></div>
+          </div>
+        </div>
+        <div class="tcard t2">
+          <div class="thead"><span class="tname">Tier-2</span></div>
+          <div class="twhat">Supporting services — reporting, batch, webhooks. Recovery important but tolerant of short windows.</div>
+          <div class="tobj">
+            <div><div class="k">RTO</div><div class="v">≤ 4h</div></div>
+            <div><div class="k">RPO</div><div class="v">≤ 15min</div></div>
+          </div>
+        </div>
+        <div class="tcard t3">
+          <div class="thead"><span class="tname">Tier-3</span></div>
+          <div class="twhat">Back-office &amp; internal tooling. Relaxed objectives; no direct customer impact.</div>
+          <div class="tobj">
+            <div><div class="k">RTO</div><div class="v">next business day</div></div>
+            <div><div class="k">RPO</div><div class="v">≤ 24h</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="floor-note">
+        <b>Platform floor:</b> every critical service holds at least <code>RTO ≤ 4h / RPO ≤ 15min</code>. The figures above are the platform defaults — concrete per-bank values are set per instance to match each customer's contract and regulatory obligations.
+      </div>
+    </div>
+
+    <div class="dr-block">
+      <div class="eyebrow">The DR flow</div>
+      <div class="dr-flow" role="tablist" aria-label="Disaster recovery flow">
+        <button class="drstep active" role="tab" aria-selected="true" data-dr="0">
+          <div class="num">01</div><h4>Detect</h4><p>Health signals cross threshold.</p><span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="drstep" role="tab" aria-selected="false" data-dr="1">
+          <div class="num">02</div><h4>Classify by tier</h4><p>Set RTO/RPO targets.</p><span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="drstep" role="tab" aria-selected="false" data-dr="2">
+          <div class="num">03</div><h4>Failover</h4><p>Multi-AZ / multi-region.</p><span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="drstep" role="tab" aria-selected="false" data-dr="3">
+          <div class="num">04</div><h4>Impact-tolerance check</h4><p>Within the tier's window?</p><span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="drstep" role="tab" aria-selected="false" data-dr="4">
+          <div class="num">05</div><h4>Restore &amp; verify</h4><p>Recover data, confirm green.</p><span class="arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="drstep" role="tab" aria-selected="false" data-dr="5">
+          <div class="num">06</div><h4>Post-incident learnings</h4><p>Runbook &amp; register updated.</p>
+        </button>
+      </div>
+      <div class="dr-detail" id="drDetail" role="tabpanel" aria-live="polite"></div>
+      <div class="gate resil">
+        <span aria-hidden="true">🛑</span>
+        <div><b>Resilience gate:</b> <b>DR drills</b> run on a cadence, and the gate blocks any critical-service deploy without a recent passed drill and an updated runbook. Provable recovery — not just a documented plan.</div>
+      </div>
+    </div>
+
+    <div class="fleet-card">
+      <h3>Fleet resilience — <em>if an agent stops working</em></h3>
+      <p class="flead">Nova FT is a fleet of agents, so resilience means the fleet degrades safely. Every change an agent makes is gated by <b>Git + human approval</b>, so a failed agent means <b>paused work, not damage</b> — nothing ships unreviewed. From there the fleet self-heals, and humans remain the ultimate failsafe.</p>
+      <div class="fleet-steps">
+        <div class="fbox">
+          <div class="who">Heartbeat</div>
+          <h5>Dead-man's switch</h5>
+          <p>Every agent emits a heartbeat. Miss it and the agent is presumed down — its in-flight work is frozen, not force-completed.</p>
+        </div>
+        <div class="fbox">
+          <div class="who">Master Orchestrator</div>
+          <h5>Reroute &amp; retry</h5>
+          <p>Detecting a stalled agent, the orchestrator reroutes the task to a healthy peer or retries it, so the queue keeps moving.</p>
+        </div>
+        <div class="fbox">
+          <div class="who">Meta / Governance</div>
+          <h5>Quarantine</h5>
+          <p>An agent behaving out of policy is quarantined — isolated from live work until reviewed, so a misbehaving agent can't spread.</p>
+        </div>
+        <div class="fbox">
+          <div class="who">Human-in-the-loop</div>
+          <h5>Kill-switch</h5>
+          <p>A human can pause any single agent, a whole department, or the entire fleet at once — instantly, at any time.</p>
+        </div>
+      </div>
+      <div class="killswitch">
+        <span aria-hidden="true">🛑</span>
+        <div class="body"><b>Humans are the ultimate failsafe.</b> Autonomy is bounded by allowlists, Git, and approval gates; the human <b>kill-switch</b> overrides everything above it. The fleet is designed to fail paused and safe, never runaway.</div>
+      </div>
+    </div>
+
+    <div class="risk-note">
+      <span class="rtag">Risk register</span>
+      <div>Every resilience risk is tracked in a living <b>risk register</b>, owned jointly by <b>Compliance</b> and <b>Risk &amp; Estimation</b> and surfaced live on <b>Nova Cortex</b>.</div>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="wrap">
@@ -552,6 +720,39 @@ footer .tm{margin-top:30px;padding-top:20px;border-top:1px solid rgba(255,255,25
     el.innerHTML = '<span>'+t.s+'</span><span class="tip">'+t.b+' · '+t.d+'</span>';
     tiles.appendChild(el);
   });
+
+  /* ---- DR flow steps ---- */
+  var drData = [
+    {tag:'signals · threshold', h:'Detect the failure', p:'Health signals — error rate, latency, replication lag, or a lost region — cross threshold and the SRE Agent opens a DR event for the affected instance.'},
+    {tag:'tier lookup', h:'Classify by service tier', p:'The impacted services are mapped to their tier (0–3), which fixes the recovery target: Tier-0 money-core and auth get the tightest RTO/RPO, back-office the most relaxed.'},
+    {tag:'multi-AZ / region', h:'Fail over', p:'Traffic and state cut over to a healthy availability zone or region. Each bank is isolated, so failover is scoped to one instance with no shared blast radius.'},
+    {tag:'impact tolerance', h:'Check impact tolerance', p:'Recovery is measured against the tier\'s RTO/RPO window. Inside tolerance, recovery proceeds automatically; outside it, the event escalates to a human immediately.'},
+    {tag:'restore · verify', h:'Restore &amp; verify', p:'Data is restored to the RPO point and services are brought back. The SRE Agent verifies signals recover to baseline across the affected instance before the event is cleared.'},
+    {tag:'runbook · register', h:'Capture learnings', p:'Every DR event feeds a post-incident review: the runbook is updated and the risk register amended, so the next drill and the resilience gate reflect what was learned.'}
+  ];
+  var drSteps = Array.prototype.slice.call(document.querySelectorAll('.drstep'));
+  var drDetail = document.getElementById('drDetail');
+  function renderDr(i){
+    var d = drData[i];
+    drDetail.innerHTML = '<div class="tag">'+d.tag+'</div><h4>'+d.h+'</h4><p>'+d.p+'</p>';
+    drSteps.forEach(function(s,idx){
+      var on = idx===i;
+      s.classList.toggle('active', on);
+      s.setAttribute('aria-selected', on ? 'true':'false');
+    });
+  }
+  drSteps.forEach(function(s){
+    var i = parseInt(s.getAttribute('data-dr'),10);
+    s.addEventListener('click', function(){ renderDr(i); });
+    s.addEventListener('keydown', function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        var ni = e.key==='ArrowRight' ? (i+1)%drSteps.length : (i-1+drSteps.length)%drSteps.length;
+        drSteps[ni].focus(); renderDr(ni);
+      }
+    });
+  });
+  if(drSteps.length){ renderDr(0); }
 
   /* ---- Scroll-spy ---- */
   var spyLinks = Array.prototype.slice.call(document.querySelectorAll('.spy a'));
