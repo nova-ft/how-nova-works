@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova AI Engineering — How It Works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1530; --deep:#0B1126; --paper:#F4F6FB; --warm:#FBF7F0;
+    --mint:#A7E8D9; --mint-deep:#5BBFA4; --mint-text:#1f9c82;
+    --lav:#A6A7F5; --blue:#7DBCFD; --amber:#F2B766;
+    --muted:#6B7388; --border:#E5E9EF; --card:#FFFFFF;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+    --mono:'Menlo','SF Mono',ui-monospace,Consolas,monospace;
+    --shadow-sm:0 2px 8px rgba(91,191,164,.10), 0 1px 3px rgba(14,21,48,.06);
+    --shadow:0 10px 30px rgba(91,191,164,.14), 0 4px 12px rgba(14,21,48,.06);
+    --shadow-lg:0 24px 60px rgba(91,191,164,.18), 0 8px 24px rgba(14,21,48,.10);
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);
+    -webkit-font-smoothing:antialiased;line-height:1.55;overflow-x:hidden;
+  }
+  a{color:inherit}
+  .serif{font-family:var(--serif);font-style:italic;color:var(--mint-deep);font-weight:400}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  h2.section-title{
+    font-weight:800;letter-spacing:-.025em;line-height:1.04;
+    font-size:clamp(1.9rem,4.4vw,3.1rem);margin:0 0 .3em;
+  }
+  .kicker{
+    display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--mint-text);
+    background:rgba(167,232,217,.28);padding:6px 14px;border-radius:999px;margin-bottom:18px;
+  }
+  .lead{font-size:clamp(1rem,1.6vw,1.18rem);color:var(--muted);max-width:62ch;margin:0 0 8px}
+  section{padding:88px 0;position:relative}
+  section:nth-child(even){background:linear-gradient(180deg,var(--warm),#fff)}
+  .n-mark{font-weight:800;letter-spacing:-.05em}
+  .n-mark::after{content:'.';color:var(--mint-deep)}
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:sticky;top:0;z-index:60;background:rgba(255,255,255,.82);
+    backdrop-filter:saturate(160%) blur(14px);border-bottom:1px solid var(--border);
+  }
+  .nav-inner{display:flex;align-items:center;gap:20px;height:62px}
+  .brand{font-size:1.25rem;font-weight:800;letter-spacing:-.04em;color:var(--ink);text-decoration:none;white-space:nowrap}
+  .brand .dot{color:var(--mint-deep)}
+  .nav-links{display:flex;gap:4px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+  .nav-links::-webkit-scrollbar{display:none}
+  .nav-links a{
+    font-size:.82rem;font-weight:600;color:var(--muted);text-decoration:none;
+    padding:8px 12px;border-radius:999px;white-space:nowrap;transition:all .18s ease;
+  }
+  .nav-links a:hover{color:var(--ink);background:var(--paper)}
+  .nav-links a.active{color:var(--mint-text);background:rgba(167,232,217,.28)}
+  .nav-links a:focus-visible{outline:2px solid var(--mint-deep);outline-offset:2px}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:radial-gradient(1200px 600px at 78% -10%,rgba(124,188,253,.18),transparent 60%),
+               radial-gradient(900px 500px at 8% 110%,rgba(166,167,245,.20),transparent 55%),
+               linear-gradient(160deg,var(--ink),var(--deep));
+    color:#fff;padding:96px 0 108px;overflow:hidden;
+  }
+  .hero .wordmark{font-size:2.4rem;font-weight:800;letter-spacing:-.05em;margin-bottom:26px}
+  .hero .wordmark span{color:var(--mint)}
+  .hero h1{
+    font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:0 0 22px;
+    font-size:clamp(2.4rem,6.4vw,4.4rem);
+  }
+  .hero h1 .serif{color:var(--mint)}
+  .hero p.thesis{font-size:clamp(1.05rem,2vw,1.4rem);color:#c7cfe4;max-width:56ch;margin:0 0 34px}
+  .hero-badges{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+  .hbadge{
+    display:flex;align-items:center;gap:9px;font-size:.86rem;font-weight:600;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    padding:9px 16px;border-radius:999px;color:#e7ecf7;
+  }
+  .hbadge b{color:#fff}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none;
+    font-family:var(--sans);font-weight:700;font-size:.92rem;
+    padding:13px 26px;border-radius:999px;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .pill-mint{background:var(--mint);color:var(--ink);box-shadow:0 10px 26px rgba(167,232,217,.28)}
+  .pill-mint:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(167,232,217,.4)}
+  .pill:focus-visible{outline:2px solid #fff;outline-offset:3px}
+  .hero-cta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+
+  /* ---------- FLEET ---------- */
+  .grid{display:grid;gap:18px}
+  .fleet-grid{grid-template-columns:repeat(auto-fill,minmax(255px,1fr));margin-top:38px}
+  .agent-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+    padding:22px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+    box-shadow:var(--shadow-sm);position:relative;overflow:hidden;text-align:left;font-family:var(--sans);
+  }
+  .agent-card::before{content:'';position:absolute;inset:0 auto 0 0;width:4px;background:var(--acc,var(--mint-deep))}
+  .agent-card:hover,.agent-card:focus-visible{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--acc,var(--mint-deep));outline:none}
+  .agent-card .ico{
+    width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+    background:var(--accbg,rgba(167,232,217,.3));margin-bottom:14px;
+  }
+  .agent-card .ico svg{width:24px;height:24px}
+  .agent-card h3{margin:0 0 4px;font-size:1.08rem;font-weight:700;letter-spacing:-.01em}
+  .agent-card .role{font-size:.78rem;font-weight:600;color:var(--acc,var(--mint-text));margin-bottom:10px}
+  .agent-card p{margin:0;font-size:.9rem;color:var(--muted);line-height:1.5}
+  .agent-card .tier{
+    display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:.72rem;font-weight:700;
+    padding:5px 11px;border-radius:999px;background:var(--paper);color:var(--ink);
+  }
+  .agent-card .tier .dot{width:7px;height:7px;border-radius:50%;background:var(--acc,var(--mint-deep))}
+  .agent-card .charter{margin-top:12px;font-size:.82rem;color:var(--muted);border-top:1px dashed var(--border);padding-top:12px;
+    max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .3s ease,margin .3s ease,padding .3s ease}
+  .agent-card.open .charter{max-height:200px;opacity:1}
+  .agent-card .charter b{color:var(--ink)}
+
+  /* ---------- SDLC LIFECYCLE ---------- */
+  .flowscroll{overflow-x:auto;padding:8px 2px 16px;margin-top:34px;-webkit-overflow-scrolling:touch}
+  .flow{display:flex;align-items:stretch;gap:0;min-width:940px}
+  .stage{
+    flex:1;min-width:118px;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:14px 12px;cursor:pointer;position:relative;text-align:center;
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;font-family:var(--sans);
+  }
+  .stage:not(:last-child){margin-right:26px}
+  .stage:not(:last-child)::after{
+    content:'';position:absolute;right:-26px;top:50%;width:26px;height:2px;
+    background:linear-gradient(90deg,var(--border),var(--mint-deep));
+  }
+  .stage:hover,.stage:focus-visible,.stage.active{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--mint-deep);outline:none}
+  .stage.active{background:linear-gradient(180deg,#fff,rgba(167,232,217,.16))}
+  .stage .num{font-size:.68rem;font-weight:700;color:var(--muted);letter-spacing:.1em}
+  .stage .snm{font-weight:700;font-size:.9rem;margin:6px 0 8px;letter-spacing:-.01em;line-height:1.15}
+  .stage .agent{font-size:.7rem;font-weight:600;color:var(--mint-text)}
+  .stage .gate{
+    margin-top:9px;display:inline-block;font-size:.64rem;font-weight:700;letter-spacing:.04em;
+    padding:3px 8px;border-radius:999px;text-transform:uppercase;
+  }
+  .gate.g-design{background:rgba(166,167,245,.24);color:#5c5de0}
+  .gate.g-pr{background:rgba(242,183,102,.24);color:#b9781e}
+  .gate.g-deploy{background:rgba(124,188,253,.22);color:#2a72c4}
+  .gate.g-none{background:var(--paper);color:var(--muted)}
+  .stage-detail{
+    margin-top:26px;background:var(--card);border:1px solid var(--border);border-left:4px solid var(--mint-deep);
+    border-radius:var(--r);padding:24px 26px;box-shadow:var(--shadow-sm);min-height:120px;
+  }
+  .stage-detail h3{margin:0 0 4px;font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+  .stage-detail .meta{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 14px}
+  .stage-detail .chip{font-size:.75rem;font-weight:600;padding:5px 12px;border-radius:999px;background:var(--paper);color:var(--ink)}
+  .stage-detail .chip b{color:var(--mint-text)}
+  .stage-detail p{margin:0;color:var(--muted);font-size:.96rem;max-width:70ch}
+
+  /* ---------- KANBAN ---------- */
+  .kanban-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:30px}
+  .kbtn{
+    font-family:var(--sans);font-weight:700;font-size:.85rem;cursor:pointer;
+    border:1px solid var(--border);background:#fff;color:var(--ink);
+    padding:10px 18px;border-radius:999px;transition:all .18s ease;
+  }
+  .kbtn:hover{border-color:var(--mint-deep);transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+  .kbtn:focus-visible{outline:2px solid var(--mint-deep);outline-offset:2px}
+  .kbtn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .kstep-label{font-size:.85rem;color:var(--muted);font-weight:600}
+  .kstep-label b{color:var(--mint-text)}
+  .board-scroll{overflow-x:auto;margin-top:22px;padding-bottom:14px;-webkit-overflow-scrolling:touch}
+  .board{display:flex;gap:14px;min-width:1080px}
+  .col{
+    flex:1;min-width:150px;background:var(--paper);border:1px solid var(--border);
+    border-radius:14px;padding:10px;display:flex;flex-direction:column;
+  }
+  .col.col-hot{outline:2px solid var(--mint-deep);outline-offset:-2px;background:rgba(167,232,217,.12)}
+  .col h4{margin:2px 4px 10px;font-size:.72rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+  .col h4 .cnt{background:#fff;border:1px solid var(--border);border-radius:999px;font-size:.66rem;padding:1px 7px;color:var(--ink)}
+  .col .drop{display:flex;flex-direction:column;gap:8px;min-height:36px}
+  .card{
+    background:#fff;border:1px solid var(--border);border-radius:11px;padding:11px 12px;
+    box-shadow:var(--shadow-sm);border-left:4px solid var(--cardacc,var(--mint-deep));
+    transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease,opacity .3s ease;font-size:.8rem;
+  }
+  .card:hover{transform:translateY(-3px) scale(1.02);box-shadow:var(--shadow);z-index:2;position:relative}
+  .card.moved{animation:pop .45s ease}
+  @keyframes pop{0%{transform:scale(.9);opacity:.4}60%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+  @media (prefers-reduced-motion:reduce){.card.moved{animation:none}}
+  .card .cid{font-family:var(--mono);font-size:.66rem;color:var(--muted);font-weight:600}
+  .card .ctitle{font-weight:600;margin:3px 0 8px;line-height:1.3;color:var(--ink)}
+  .card .labels{display:flex;flex-wrap:wrap;gap:4px}
+  .lbl{font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.02em}
+  .l-feature{background:rgba(167,232,217,.4);color:#158066}
+  .l-task{background:rgba(124,188,253,.28);color:#2a72c4}
+  .l-bug{background:rgba(242,120,120,.22);color:#c23b3b}
+  .l-backend{background:rgba(166,167,245,.24);color:#5c5de0}
+  .l-mobile{background:rgba(242,183,102,.26);color:#b9781e}
+  .l-web{background:rgba(124,188,253,.2);color:#2a72c4}
+  .l-test{background:rgba(167,232,217,.34);color:#158066}
+  .l-infra{background:rgba(107,115,136,.16);color:#4b5266}
+  .l-prio{background:#0E1530;color:#fff}
+  .card.bugcard{--cardacc:#e06868}
+  .board-note{font-size:.82rem;color:var(--muted);margin-top:16px;display:flex;flex-wrap:wrap;gap:16px}
+  .board-note span{display:inline-flex;align-items:center;gap:6px}
+  .swatch{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* ---------- FEATURE DOSSIER ---------- */
+  .feat-layout{display:grid;grid-template-columns:1.05fr 1.35fr;gap:28px;margin-top:36px;align-items:start}
+  .dossier{
+    background:linear-gradient(160deg,var(--ink),var(--deep));color:#fff;border-radius:var(--r);
+    padding:28px;box-shadow:var(--shadow-lg);
+  }
+  .dossier h3{margin:0 0 6px;font-size:1.2rem;font-weight:800}
+  .dossier .sub{color:#aab4d0;font-size:.9rem;margin:0 0 18px}
+  .dossier ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .dossier li{display:flex;align-items:flex-start;gap:10px;font-size:.88rem;color:#dbe2f2}
+  .dossier li .tick{color:var(--mint);font-weight:800;flex:none}
+  .dossier li b{color:#fff}
+  .table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-sm);overflow:hidden}
+  .table-scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:520px;font-size:.86rem}
+  thead th{text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);
+    padding:14px 16px;border-bottom:1px solid var(--border);font-weight:700;white-space:nowrap}
+  tbody td{padding:13px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--warm)}
+  .fname{font-weight:700}
+  .fsub{font-size:.74rem;color:var(--muted);font-family:var(--mono)}
+  .status{font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .st-live{background:rgba(167,232,217,.4);color:#158066}
+  .st-build{background:rgba(242,183,102,.26);color:#b9781e}
+  .st-design{background:rgba(166,167,245,.24);color:#5c5de0}
+  .st-review{background:rgba(124,188,253,.24);color:#2a72c4}
+  .bar{background:var(--paper);border-radius:999px;height:8px;width:88px;overflow:hidden;display:inline-block;vertical-align:middle}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--mint-deep),var(--mint));border-radius:999px}
+  .gapnum{font-size:.74rem;color:var(--muted);margin-left:8px;font-variant-numeric:tabular-nums}
+  .eta{font-family:var(--mono);font-size:.8rem;color:var(--ink)}
+
+  /* ---------- STANDARD VS CUSTOM ---------- */
+  .toggle-row{display:flex;gap:8px;margin-top:30px;background:var(--card);border:1px solid var(--border);
+    border-radius:999px;padding:5px;width:max-content;box-shadow:var(--shadow-sm)}
+  .toggle-row button{
+    font-family:var(--sans);font-weight:700;font-size:.85rem;cursor:pointer;border:none;background:transparent;
+    color:var(--muted);padding:9px 20px;border-radius:999px;transition:all .2s ease;
+  }
+  .toggle-row button.on{background:var(--ink);color:#fff}
+  .toggle-row button:focus-visible{outline:2px solid var(--mint-deep);outline-offset:2px}
+  .sc-layout{display:grid;grid-template-columns:1fr auto 1fr;gap:22px;margin-top:30px;align-items:stretch}
+  .layer{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;
+    box-shadow:var(--shadow-sm);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+  }
+  .layer.hl{border-color:var(--mint-deep);box-shadow:var(--shadow);transform:translateY(-4px)}
+  .layer.dim{opacity:.5}
+  .layer .tag{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+  .layer.std .tag{color:var(--mint-text)}
+  .layer.cust .tag{color:#b9781e}
+  .layer h3{margin:0 0 4px;font-size:1.15rem;font-weight:800;letter-spacing:-.01em}
+  .layer code{font-family:var(--mono);font-size:.82rem;background:var(--paper);padding:3px 9px;border-radius:7px;color:var(--ink);display:inline-block;margin-bottom:14px}
+  .layer ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+  .layer li{font-size:.85rem;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
+  .layer li::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--mint-deep);margin-top:7px;flex:none}
+  .layer.cust li::before{background:var(--amber)}
+  .derive{display:grid;place-items:center;color:var(--muted);font-weight:700;font-size:.8rem;text-align:center;gap:8px}
+  .derive svg{width:40px;height:40px}
+  .derive .arw{color:var(--mint-deep)}
+  .cust-instances{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .inst{font-family:var(--mono);font-size:.72rem;padding:5px 11px;border-radius:8px;background:var(--paper);border:1px solid var(--border);color:var(--ink)}
+  .inst.active{background:var(--amber);border-color:var(--amber);color:var(--ink);font-weight:700}
+
+  /* ---------- GOLDEN PATH ---------- */
+  .golden{background:linear-gradient(160deg,var(--ink),var(--deep));border-radius:24px;padding:44px 34px;margin-top:36px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+  .golden::before{content:'';position:absolute;top:-40%;right:-10%;width:340px;height:340px;
+    background:radial-gradient(circle,rgba(167,232,217,.2),transparent 70%)}
+  .golden h3{color:#fff;margin:0 0 6px;font-size:1.4rem;font-weight:800}
+  .golden .sub{color:#aab4d0;margin:0 0 28px;font-size:.95rem}
+  .gpath-scroll{overflow-x:auto;padding-bottom:6px}
+  .gpath{display:flex;align-items:center;gap:0;min-width:820px;position:relative;z-index:1}
+  .gnode{
+    flex:1;text-align:center;color:#dbe2f2;position:relative;padding:0 6px;cursor:default;
+  }
+  .gnode .dot{
+    width:52px;height:52px;border-radius:14px;margin:0 auto 12px;display:grid;place-items:center;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);transition:all .25s ease;
+  }
+  .gnode:hover .dot{background:var(--mint);border-color:var(--mint);transform:translateY(-4px) scale(1.06)}
+  .gnode:hover .dot svg{color:var(--ink)}
+  .gnode .dot svg{width:24px;height:24px;color:var(--mint);transition:color .25s ease}
+  .gnode .gt{font-size:.8rem;font-weight:700;color:#fff;line-height:1.2}
+  .gnode .gd{font-size:.68rem;color:#8f9bbd;margin-top:3px}
+  .gnode:not(:last-child)::after{
+    content:'';position:absolute;top:26px;right:-2px;width:calc(100% - 52px);height:2px;left:50%;
+    transform:translateX(26px);background:linear-gradient(90deg,rgba(167,232,217,.5),rgba(255,255,255,.12));z-index:-1;
+  }
+  .golden .code{
+    margin-top:28px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.1);border-radius:12px;
+    padding:16px 18px;font-family:var(--mono);font-size:.8rem;color:#c9d3ea;overflow-x:auto;line-height:1.7;
+  }
+  .golden .code .k{color:var(--mint)}
+  .golden .code .c{color:#7f8bab}
+  .golden .code .b{color:var(--amber)}
+
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--deep);color:#9aa5c4;padding:56px 0 40px}
+  footer .foot-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:flex-start}
+  footer .brand-lg{font-size:1.8rem;font-weight:800;letter-spacing:-.05em;color:#fff}
+  footer .brand-lg .dot{color:var(--mint)}
+  footer .tagline{max-width:40ch;font-size:.9rem;margin-top:10px;color:#8492b5}
+  footer .foot-cols{display:flex;gap:48px;flex-wrap:wrap}
+  footer .fcol h5{color:#fff;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px}
+  footer .fcol a{display:block;color:#9aa5c4;text-decoration:none;font-size:.86rem;padding:4px 0;transition:color .15s}
+  footer .fcol a:hover{color:var(--mint)}
+  footer .legal{border-top:1px solid rgba(255,255,255,.08);margin-top:40px;padding-top:22px;font-size:.78rem;color:#727e9f;line-height:1.7}
+  footer .legal .tm{color:#9aa5c4}
+
+  @media(max-width:840px){
+    .feat-layout{grid-template-columns:1fr}
+    .sc-layout{grid-template-columns:1fr}
+    .derive{padding:8px 0}
+    .derive svg{transform:rotate(90deg)}
+  }
+  .skip{position:absolute;left:-999px;top:0;background:var(--mint);color:var(--ink);padding:10px 16px;border-radius:8px;z-index:100;font-weight:700}
+  .skip:focus{left:12px;top:12px}
+</style>
+</head>
+<body>
+<a href="#fleet" class="skip">Skip to content</a>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Section navigation">
+  <div class="wrap nav-inner">
+    <a href="#hero" class="brand">Nova<span class="dot">.</span>FT</a>
+    <div class="nav-links" id="navlinks">
+      <a href="#fleet">The Fleet</a>
+      <a href="#sdlc">SDLC Lifecycle</a>
+      <a href="#kanban">Kanban Board</a>
+      <a href="#feature">Feature-Driven</a>
+      <a href="#standard">Standard vs Custom</a>
+      <a href="#golden">Golden Path</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="wrap">
+    <div class="wordmark">n<span>.</span></div>
+    <h1>Nova AI <span class="serif">Engineering</span></h1>
+    <p class="thesis">A software department that runs as an autonomous SDLC. <b style="color:#fff">Agents build. Humans approve.</b> Every feature flows through the same gated pipeline — tracked, reviewed, and shipped.</p>
+    <div class="hero-badges">
+      <span class="hbadge"><b>8</b> engineering agents</span>
+      <span class="hbadge"><b>9-stage</b> SDLC pipeline</span>
+      <span class="hbadge">Kanban-tracked <b>GitHub Issues</b></span>
+      <span class="hbadge">No merge without a <b>human gate</b></span>
+    </div>
+    <div class="hero-cta">
+      <a href="#sdlc" class="pill pill-mint">See the lifecycle →</a>
+    </div>
+  </div>
+</header>
+
+<!-- FLEET -->
+<section id="fleet">
+  <div class="wrap">
+    <span class="kicker">The engineering fleet</span>
+    <h2 class="section-title">Eight agents, one <span class="serif">delivery team</span></h2>
+    <p class="lead">Each agent carries a charter, a library of reusable skills, and per-customer memory. Tap a card to see its charter.</p>
+    <div class="grid fleet-grid" id="fleetGrid"></div>
+  </div>
+</section>
+
+<!-- SDLC -->
+<section id="sdlc">
+  <div class="wrap">
+    <span class="kicker">The SDLC lifecycle</span>
+    <h2 class="section-title">One pipeline, <span class="serif">every feature</span></h2>
+    <p class="lead">From backlog to continuous support, each stage has an owning agent and a gate. Nothing reaches <code style="font-family:var(--mono);background:var(--paper);padding:1px 6px;border-radius:5px">main</code> without a human approving. Click a stage.</p>
+    <div class="flowscroll">
+      <div class="flow" id="flow" role="tablist" aria-label="SDLC stages"></div>
+    </div>
+    <div class="stage-detail" id="stageDetail" role="region" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- KANBAN -->
+<section id="kanban">
+  <div class="wrap">
+    <span class="kicker">Kanban tracking</span>
+    <h2 class="section-title">Work moves as <span class="serif">issues on a board</span></h2>
+    <p class="lead">Every implementation task and bug is a GitHub Issue that travels across columns matching the lifecycle stages. Watch the <b>enrolment</b> feature advance.</p>
+    <div class="kanban-controls">
+      <button class="kbtn" id="kPrev">‹ Prev</button>
+      <button class="kbtn primary" id="kNext">Advance step ›</button>
+      <button class="kbtn" id="kPlay">▶ Autoplay</button>
+      <button class="kbtn" id="kReset">↺ Reset</button>
+      <span class="kstep-label" id="kLabel"></span>
+    </div>
+    <div class="board-scroll">
+      <div class="board" id="board"></div>
+    </div>
+    <div class="board-note">
+      <span><i class="swatch" style="background:var(--mint-deep)"></i> task issue</span>
+      <span><i class="swatch" style="background:#e06868"></i> bug issue</span>
+      <span>Labels: <b>type</b> · <b>layer</b> · <b>stage</b> · <b>customer</b> · <b>priority</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE -->
+<section id="feature">
+  <div class="wrap">
+    <span class="kicker">Feature-driven delivery</span>
+    <h2 class="section-title">The unit of work is a <span class="serif">feature</span></h2>
+    <p class="lead">Each feature is a living Feature Dossier, tracked in a product backlog owned by the Product Office.</p>
+    <div class="feat-layout">
+      <div class="dossier">
+        <h3>Feature Dossier</h3>
+        <p class="sub">One source of truth per feature</p>
+        <ul>
+          <li><span class="tick">✦</span><span><b>PRD</b> — problem, scope, acceptance criteria</span></li>
+          <li><span class="tick">✦</span><span><b>Architecture</b> — the technical design</span></li>
+          <li><span class="tick">✦</span><span><b>API contracts</b> — the interfaces between layers</span></li>
+          <li><span class="tick">✦</span><span><b>Per-layer status</b> — backend ∥ mobile ∥ web</span></li>
+          <li><span class="tick">✦</span><span><b>Gates</b> — design · PR · deploy sign-offs</span></li>
+          <li><span class="tick">✦</span><span><b>Gap analysis</b> — what's missing to be done</span></li>
+          <li><span class="tick">✦</span><span><b>ETA</b> — projected completion</span></li>
+        </ul>
+      </div>
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Feature</th><th>Status</th><th>Completeness</th><th>ETA</th></tr></thead>
+            <tbody id="backlogBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STANDARD VS CUSTOM -->
+<section id="standard">
+  <div class="wrap">
+    <span class="kicker">Standard vs custom</span>
+    <h2 class="section-title">One product master, <span class="serif">many bank instances</span></h2>
+    <p class="lead">A reusable Nova-standard implementation is the master. Each customer gets a custom instance — cloned from the standard, then extended with their adapter, config, and branding.</p>
+    <div class="toggle-row" role="tablist" aria-label="Highlight layer">
+      <button id="tBoth" class="on" role="tab" aria-selected="true">Both layers</button>
+      <button id="tStd" role="tab" aria-selected="false">Nova standard</button>
+      <button id="tCust" role="tab" aria-selected="false">ATIB custom</button>
+    </div>
+    <div class="sc-layout">
+      <div class="layer std" id="layerStd">
+        <div class="tag">Nova-standard · product master</div>
+        <h3>The reusable platform</h3>
+        <code>nova-platform-*</code>
+        <ul>
+          <li>Canonical implementation of every feature</li>
+          <li>Shared domain, services & UI kit</li>
+          <li>Hardened, tested, compliance-baselined</li>
+          <li>Single source every instance derives from</li>
+        </ul>
+      </div>
+      <div class="derive">
+        <svg viewBox="0 0 24 24" fill="none" class="arw"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>clone +<br>adapter /<br>config /<br>branding</span>
+      </div>
+      <div class="layer cust" id="layerCust">
+        <div class="tag">Customer-custom · instance</div>
+        <h3>The bank's implementation</h3>
+        <code>&lt;bank&gt;-*</code>
+        <ul>
+          <li>Derived from the Nova standard</li>
+          <li>Bank-specific adapters & integrations</li>
+          <li>Their config, rules & branding</li>
+          <li>Inherits every upstream improvement</li>
+        </ul>
+        <div class="cust-instances">
+          <span class="inst active">atib-*</span>
+          <span class="inst">bank-b-*</span>
+          <span class="inst">bank-c-*</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOLDEN PATH -->
+<section id="golden">
+  <div class="wrap">
+    <span class="kicker">The golden path</span>
+    <h2 class="section-title">How code reaches <span class="serif">production</span></h2>
+    <p class="lead">Agents author pull requests as <code style="font-family:var(--mono);background:var(--paper);padding:1px 6px;border-radius:5px">nova-ft-fleet-agent[bot]</code>. The path to <code style="font-family:var(--mono);background:var(--paper);padding:1px 6px;border-radius:5px">main</code> is always the same.</p>
+    <div class="golden">
+      <h3>Branch → Deploy</h3>
+      <p class="sub">Six steps. One human gate. Zero exceptions.</p>
+      <div class="gpath-scroll">
+        <div class="gpath" id="gpath"></div>
+      </div>
+      <div class="code" id="goldenCode"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="brand-lg">Nova<span class="dot">.</span>FT</div>
+        <p class="tagline">AI Engineering — an autonomous software department where agents build and humans approve.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="fcol">
+          <h5>Lifecycle</h5>
+          <a href="#sdlc">SDLC pipeline</a>
+          <a href="#kanban">Kanban board</a>
+          <a href="#golden">Golden path</a>
+        </div>
+        <div class="fcol">
+          <h5>Delivery</h5>
+          <a href="#fleet">The fleet</a>
+          <a href="#feature">Feature dossiers</a>
+          <a href="#standard">Standard vs custom</a>
+        </div>
+      </div>
+    </div>
+    <div class="legal">
+      <span class="tm">Nova FT™</span> is a trademark of Nova Financial Technologies Limited. &copy; 2026 Nova Financial Technologies Limited. All rights reserved.<br>
+      This page is an internal explainer of the Nova FT AI Engineering department's operating model.
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* ---------- ICONS ---------- */
+  function icon(name){
+    var p={
+      orch:'<path d="M12 3v6m0 6v6m-9-9h6m6 0h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>',
+      backend:'<rect x="3" y="4" width="18" height="5" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="11" width="18" height="5" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M7 6.5h.01M7 13.5h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      mobile:'<rect x="7" y="3" width="10" height="18" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      web:'<rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 21h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      infra:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5" stroke="currentColor" stroke-width="1.6"/>',
+      test:'<path d="M5 21l7-14 7 14H5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+      review:'<circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+      ml:'<circle cx="12" cy="6" r="2.4" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="17" r="2.4" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="17" r="2.4" stroke="currentColor" stroke-width="2"/><path d="M10.5 7.8L7.4 15M13.5 7.8L16.6 15M8.4 17h7.2" stroke="currentColor" stroke-width="1.8"/>'
+    };
+    return '<svg viewBox="0 0 24 24" fill="none">'+ (p[name]||'') +'</svg>';
+  }
+
+  /* ---------- FLEET ---------- */
+  var fleet=[
+    {n:'Orchestrator',r:'Coordinator',ic:'orch',acc:'#5BBFA4',bg:'rgba(167,232,217,.3)',tier:'Tier 3 · high autonomy',
+     d:'Decomposes a feature spec, fans work out to the fleet, then collects and stitches the resulting PRs.',
+     ch:'Charter: own the plan. Turn a spec into a dependency-ordered task graph, dispatch to specialists, reconcile outputs into a coherent feature.'},
+    {n:'Backend',r:'.NET 8 · Onion',ic:'backend',acc:'#A6A7F5',bg:'rgba(166,167,245,.24)',tier:'Tier 2 · gated autonomy',
+     d:'Builds domain, application and infrastructure layers as clean Onion-architecture .NET 8 services.',
+     ch:'Charter: implement business logic behind API contracts, keep the domain pure, wire persistence and messaging at the edges.'},
+    {n:'Mobile',r:'React Native · Expo',ic:'mobile',acc:'#F2B766',bg:'rgba(242,183,102,.26)',tier:'Tier 2 · gated autonomy',
+     d:'Delivers the customer-facing app in React Native / Expo against the shared API contracts.',
+     ch:'Charter: ship the mobile experience — onboarding, enrolment, face-ID and payment flows — with offline-aware, accessible UI.'},
+    {n:'Web',r:'Next.js back-office',ic:'web',acc:'#7DBCFD',bg:'rgba(124,188,253,.22)',tier:'Tier 2 · gated autonomy',
+     d:'Builds the Next.js back-office consoles operators and compliance teams use.',
+     ch:'Charter: expose operational and admin surfaces — case review, config, dashboards — over the same contracts as mobile.'},
+    {n:'Infra',r:'Multi-cloud',ic:'infra',acc:'#5BBFA4',bg:'rgba(167,232,217,.3)',tier:'Tier 2 · gated autonomy',
+     d:'Provisions and configures multi-cloud infrastructure and environments as code.',
+     ch:'Charter: stand up reproducible, secure environments; own networking, secrets, and the deploy substrate across clouds.'},
+    {n:'Test / QA',r:'Unit → E2E',ic:'test',acc:'#1f9c82',bg:'rgba(167,232,217,.34)',tier:'Tier 2 · gated autonomy',
+     d:'Authors and runs the pyramid — unit, integration and end-to-end tests — before anything advances.',
+     ch:'Charter: prove the feature works. Grow coverage from unit through E2E, block the QA gate on failures.'},
+    {n:'Reviewer',r:'Adversarial PR',ic:'review',acc:'#A6A7F5',bg:'rgba(166,167,245,.24)',tier:'Tier 2 · gated autonomy',
+     d:'Reviews every PR adversarially — hunting regressions, edge cases and contract drift.',
+     ch:'Charter: be the skeptic. Challenge each PR against the contract and acceptance criteria before a human sees it.'},
+    {n:'Data / ML-Ops',r:'AI models',ic:'ml',acc:'#F2B766',bg:'rgba(242,183,102,.26)',tier:'Tier 2 · gated autonomy',
+     d:'Owns the AI models — KYC face-match and fraud detection — training, serving and monitoring.',
+     ch:'Charter: build and operate the models. Manage datasets, evaluation, deployment and drift for face-match and fraud.'}
+  ];
+  var fg=document.getElementById('fleetGrid');
+  fleet.forEach(function(a){
+    var el=document.createElement('button');
+    el.className='agent-card';el.type='button';el.setAttribute('aria-expanded','false');
+    el.style.setProperty('--acc',a.acc);el.style.setProperty('--accbg',a.bg);
+    el.innerHTML='<div class="ico" style="color:'+a.acc+'">'+icon(a.ic)+'</div>'+
+      '<h3>'+a.n+'</h3><div class="role">'+a.r+'</div><p>'+a.d+'</p>'+
+      '<span class="tier"><span class="dot"></span>'+a.tier+'</span>'+
+      '<div class="charter">'+a.ch+'</div>';
+    el.addEventListener('click',function(){
+      var open=el.classList.toggle('open');
+      el.setAttribute('aria-expanded',open?'true':'false');
+    });
+    fg.appendChild(el);
+  });
+
+  /* ---------- SDLC STAGES ---------- */
+  var stages=[
+    {nm:'Backlog',ag:'Product Office',gate:'',gc:'g-none',gl:'no gate',
+     d:'Prioritised features and bugs wait as GitHub Issues in the product backlog until pulled into the pipeline.'},
+    {nm:'Design',ag:'Orchestrator',gate:'Design gate',gc:'g-design',gl:'design-gate',
+     d:'The Orchestrator drafts the PRD, architecture and API contracts. The design gate confirms scope and interfaces before any code is written.'},
+    {nm:'Build',ag:'Backend ∥ Mobile ∥ Web',gate:'',gc:'g-none',gl:'parallel build',
+     d:'Backend, Mobile and Web agents implement their layers in parallel against the agreed API contracts, each on its own branch.'},
+    {nm:'Review',ag:'Reviewer',gate:'PR gate',gc:'g-pr',gl:'PR-gate · human',
+     d:'The Reviewer adversarially critiques every PR. Then the PR gate — a human approval — is the one thing standing between a branch and main.'},
+    {nm:'Test / QA',ag:'Test / QA',gate:'QA gate',gc:'g-none',gl:'QA gate',
+     d:'Unit, integration and end-to-end suites run. The QA gate blocks progress until the pyramid is green.'},
+    {nm:'Security scan',ag:'Infra / Reviewer',gate:'',gc:'g-none',gl:'scan',
+     d:'Automated security and dependency scanning checks the change for vulnerabilities and secret leaks before release.'},
+    {nm:'Compliance / audit',ag:'Product Office',gate:'',gc:'g-none',gl:'audit trail',
+     d:'The change is checked against regulatory and customer compliance requirements, producing an auditable record.'},
+    {nm:'Deploy',ag:'Infra',gate:'Deploy gate',gc:'g-deploy',gl:'deploy-gate',
+     d:'Infra promotes the squash-merged change through environments. The deploy gate authorises the release to production.'},
+    {nm:'Continuous Support',ag:'Fleet',gate:'',gc:'g-none',gl:'monitor',
+     d:'The fleet monitors the live feature, triages incoming bugs as new Issues, and feeds fixes back to the top of the pipeline.'}
+  ];
+  var flow=document.getElementById('flow'),detail=document.getElementById('stageDetail');
+  function showStage(i){
+    var s=stages[i];
+    Array.prototype.forEach.call(flow.children,function(c,ci){
+      c.classList.toggle('active',ci===i);
+      c.setAttribute('aria-selected',ci===i?'true':'false');
+      c.tabIndex=ci===i?0:-1;
+    });
+    detail.innerHTML='<h3>'+(i+1)+'. '+s.nm+'</h3>'+
+      '<div class="meta"><span class="chip">Owner: <b>'+s.ag+'</b></span>'+
+      (s.gate?'<span class="chip"><span class="gate '+s.gc+'">'+s.gl+'</span></span>':'<span class="chip">'+s.gl+'</span>')+
+      '</div><p>'+s.d+'</p>';
+  }
+  stages.forEach(function(s,i){
+    var el=document.createElement('button');
+    el.className='stage';el.type='button';el.setAttribute('role','tab');
+    el.innerHTML='<div class="num">'+String(i+1).padStart(2,'0')+'</div>'+
+      '<div class="snm">'+s.nm+'</div><div class="agent">'+s.ag+'</div>'+
+      (s.gate?'<span class="gate '+s.gc+'">'+s.gate+'</span>':'<span class="gate g-none">'+s.gl+'</span>');
+    el.addEventListener('click',function(){showStage(i);});
+    el.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        var n=(i+(e.key==='ArrowRight'?1:-1)+stages.length)%stages.length;
+        showStage(n);flow.children[n].focus();
+      }
+    });
+    flow.appendChild(el);
+  });
+  showStage(1);
+
+  /* ---------- KANBAN ---------- */
+  var kcols=['Backlog','Design','Build','Review','Test / QA','Security','Compliance','Deploy','Support'];
+  // each card: start column index, and its target column index at each of 5 steps
+  var cards=[
+    {id:'#412',t:'Enrolment: capture ID document',type:'feature',layer:'mobile',pr:'P1',bug:false,pos:[0,1,2,3,4]},
+    {id:'#413',t:'Enrolment API contract',type:'task',layer:'backend',pr:'P1',bug:false,pos:[0,1,3,4,7]},
+    {id:'#414',t:'Face-match model integration',type:'task',layer:'backend',pr:'P2',bug:false,pos:[0,0,2,3,4]},
+    {id:'#415',t:'Enrolment status console',type:'task',layer:'web',pr:'P3',bug:false,pos:[0,0,2,2,3]},
+    {id:'#416',t:'Provision enrol env',type:'task',layer:'infra',pr:'P2',bug:false,pos:[1,3,4,7,7]},
+    {id:'#417',t:'Blank frame on camera retry',type:'bug',layer:'mobile',pr:'P1',bug:true,pos:[0,0,0,2,3]}
+  ];
+  var STEPS=5, step=0, playing=false, timer=null;
+  var board=document.getElementById('board'), kLabel=document.getElementById('kLabel');
+  var stepNames=['Kickoff','Design signed off','Building in parallel','Under review + QA','Shipping'];
+  function layerClass(l){return 'l-'+l;}
+  function buildBoard(){
+    board.innerHTML='';
+    kcols.forEach(function(c,ci){
+      var col=document.createElement('div');col.className='col';col.dataset.i=ci;
+      col.innerHTML='<h4>'+c+' <span class="cnt">0</span></h4><div class="drop"></div>';
+      board.appendChild(col);
+    });
+  }
+  function render(animate){
+    var cols=board.querySelectorAll('.col');
+    cols.forEach(function(c){c.querySelector('.drop').innerHTML='';c.classList.remove('col-hot');});
+    // find the "hot" column = max pos among feature cards this step (excluding backlog stuck)
+    var counts=new Array(kcols.length).fill(0);
+    cards.forEach(function(cd){
+      var ci=cd.pos[step];
+      counts[ci]++;
+      var el=document.createElement('div');
+      el.className='card'+(cd.bug?' bugcard':'')+(animate&&cd.prev!==ci?' moved':'');
+      el.innerHTML='<div class="cid">'+cd.id+'</div><div class="ctitle">'+cd.t+'</div>'+
+        '<div class="labels">'+
+          '<span class="lbl l-'+cd.type+'">'+cd.type+'</span>'+
+          '<span class="lbl '+layerClass(cd.layer)+'">'+cd.layer+'</span>'+
+          '<span class="lbl l-prio">'+cd.pr+'</span>'+
+          '<span class="lbl l-feature" style="background:rgba(167,232,217,.28);color:#158066">enrolment</span>'+
+        '</div>';
+      cols[ci].querySelector('.drop').appendChild(el);
+      cd.prev=ci;
+    });
+    cols.forEach(function(c,ci){
+      c.querySelector('.cnt').textContent=counts[ci];
+    });
+    // highlight the column holding the lead card
+    var lead=cards[0].pos[step];
+    if(cols[lead])cols[lead].classList.add('col-hot');
+    kLabel.innerHTML='Step '+(step+1)+'/'+STEPS+' — <b>'+stepNames[step]+'</b>';
+  }
+  buildBoard();render(false);
+  document.getElementById('kNext').addEventListener('click',function(){step=(step+1)%STEPS;render(!reduce);});
+  document.getElementById('kPrev').addEventListener('click',function(){step=(step-1+STEPS)%STEPS;render(!reduce);});
+  document.getElementById('kReset').addEventListener('click',function(){step=0;render(!reduce);stopPlay();});
+  function stopPlay(){playing=false;clearInterval(timer);document.getElementById('kPlay').textContent='▶ Autoplay';}
+  document.getElementById('kPlay').addEventListener('click',function(){
+    if(playing){stopPlay();return;}
+    playing=true;this.textContent='❚❚ Pause';
+    timer=setInterval(function(){step=(step+1)%STEPS;render(!reduce);},1900);
+  });
+
+  /* ---------- BACKLOG TABLE ---------- */
+  var backlog=[
+    {f:'Onboarding',repo:'nova-platform-onboarding',st:'Live',sc:'st-live',gap:100,eta:'Shipped'},
+    {f:'Enrolment',repo:'nova-platform-enrolment',st:'In build',sc:'st-build',gap:72,eta:'Q3 2026'},
+    {f:'Face-ID verification',repo:'nova-platform-faceid',st:'In review',sc:'st-review',gap:88,eta:'Aug 2026'},
+    {f:'Payments · tibtag',repo:'atib-payments-tibtag',st:'In build',sc:'st-build',gap:64,eta:'Q3 2026'},
+    {f:'Payments · internal',repo:'nova-platform-pay-internal',st:'Live',sc:'st-live',gap:100,eta:'Shipped'},
+    {f:'Payments · lypay',repo:'nova-platform-pay-lypay',st:'In design',sc:'st-design',gap:22,eta:'Q4 2026'},
+    {f:'Payments · onepay',repo:'nova-platform-pay-onepay',st:'In design',sc:'st-design',gap:15,eta:'Q4 2026'}
+  ];
+  var tb=document.getElementById('backlogBody');
+  backlog.forEach(function(r){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td><div class="fname">'+r.f+'</div><div class="fsub">'+r.repo+'</div></td>'+
+      '<td><span class="status '+r.sc+'">'+r.st+'</span></td>'+
+      '<td><span class="bar"><i style="width:'+r.gap+'%"></i></span><span class="gapnum">'+r.gap+'%</span></td>'+
+      '<td class="eta">'+r.eta+'</td>';
+    tb.appendChild(tr);
+  });
+
+  /* ---------- STANDARD VS CUSTOM TOGGLE ---------- */
+  var lStd=document.getElementById('layerStd'),lCust=document.getElementById('layerCust');
+  var btns={both:document.getElementById('tBoth'),std:document.getElementById('tStd'),cust:document.getElementById('tCust')};
+  function setLayer(mode){
+    for(var k in btns){btns[k].classList.remove('on');btns[k].setAttribute('aria-selected','false');}
+    btns[mode].classList.add('on');btns[mode].setAttribute('aria-selected','true');
+    lStd.classList.remove('hl','dim');lCust.classList.remove('hl','dim');
+    if(mode==='std'){lStd.classList.add('hl');lCust.classList.add('dim');}
+    else if(mode==='cust'){lCust.classList.add('hl');lStd.classList.add('dim');}
+  }
+  btns.both.addEventListener('click',function(){setLayer('both');});
+  btns.std.addEventListener('click',function(){setLayer('std');});
+  btns.cust.addEventListener('click',function(){setLayer('cust');});
+
+  /* ---------- GOLDEN PATH ---------- */
+  var gp=[
+    {t:'Branch',d:'off main',ic:'<path d="M6 3v12m0 0a3 3 0 103 3m-3-3a3 3 0 013 3m9-15a3 3 0 11-3 3m3-3a3 3 0 00-3 3m0 0v2a4 4 0 01-4 4H6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'},
+    {t:'PR',d:'bot-authored',ic:'<path d="M7 8h10M7 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="4" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="2"/>'},
+    {t:'CI verify',d:'checks pass',ic:'<path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'},
+    {t:'Human approval',d:'the PR gate',ic:'<circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="2"/><path d="M5 20c1.2-3.6 4-5 7-5s5.8 1.4 7 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'},
+    {t:'Squash-merge',d:'branch deleted',ic:'<path d="M7 3v18M7 8a5 5 0 005 5h5m0 0l-3-3m3 3l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'},
+    {t:'Deploy',d:'to production',ic:'<path d="M12 2c3.5 3 5 7 5 11l-5 3-5-3c0-4 1.5-8 5-11z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2" stroke="currentColor" stroke-width="2"/><path d="M8 18l-2 4m10-4l2 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'}
+  ];
+  var gpath=document.getElementById('gpath');
+  gp.forEach(function(g){
+    var el=document.createElement('div');el.className='gnode';el.tabIndex=0;
+    el.innerHTML='<div class="dot"><svg viewBox="0 0 24 24" fill="none">'+g.ic+'</svg></div>'+
+      '<div class="gt">'+g.t+'</div><div class="gd">'+g.d+'</div>';
+    gpath.appendChild(el);
+  });
+  document.getElementById('goldenCode').innerHTML=
+    '<span class="c"># agent opens a branch and a bot-authored PR</span><br>'+
+    '<span class="k">git</span> checkout -b <span class="b">feat/enrolment-capture</span><br>'+
+    '<span class="k">gh</span> pr create --author <span class="b">"nova-ft-fleet-agent[bot]"</span><br>'+
+    '<span class="c"># CI runs the required `verify` check → then a human approves</span><br>'+
+    '<span class="k">gh</span> pr merge --squash --delete-branch <span class="c">// only after the PR gate</span>';
+
+  /* ---------- SCROLL SPY ---------- */
+  var links=Array.prototype.slice.call(document.querySelectorAll('#navlinks a'));
+  var secIds=links.map(function(a){return a.getAttribute('href').slice(1);});
+  var secs=secIds.map(function(id){return document.getElementById(id);}).filter(Boolean);
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id);});
+        }
+      });
+    },{rootMargin:'-45% 0px -50% 0px',threshold:0});
+    secs.forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+</body>
+</html>
