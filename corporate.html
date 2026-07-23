@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova AI Corporate — How It Works · Nova FT</title>
+<meta name="description" content="The Corporate department at Nova FT: Legal, People and the shared brain. The connective tissue that keeps contracts sound, people onboarded, and the whole agent fleet learning over time.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235BBFA4'/%3E%3Cstop offset='1' stop-color='%23A6A7F5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92' fill='none' stroke='url(%23g)' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F4F6FB;
+    --warm: #FBF7F0;
+    --deep-bg: #0B1126;
+    --ink: #0E1530;
+    --muted: #6B7388;
+    --muted-2: #9097A8;
+    --mint: #A7E8D9;
+    --mint-2: #7CD9C2;
+    --mint-deep: #5BBFA4;
+    --mint-text: #1f9c82;
+    --lavender: #A6A7F5;
+    --blue: #7DBCFD;
+    --amber: #F2B766;
+    --card: #FFFFFF;
+    --border: #E5E9EF;
+    --primary-50: #F0FBF8;
+
+    --shadow-sm: 0 2px 8px rgba(47,58,70,0.06);
+    --shadow-md: 0 12px 32px rgba(47,58,70,0.10);
+    --shadow-mint: 0 10px 22px rgba(91,191,164,0.28);
+    --shadow-mint-lg: 0 18px 38px rgba(91,191,164,0.32);
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+    --font-mono: 'Roboto Mono', 'Menlo', 'SF Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ─── AURORA BACKGROUND ─── */
+  .aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--paper); }
+  .aurora .mint-glow {
+    position: absolute; width: 130%; height: 100%; top: -20%; left: -30%;
+    background: radial-gradient(ellipse 65% 50% at 22% 14%, rgba(167,232,217,0.55) 0%, transparent 65%);
+  }
+  .aurora .lav-glow {
+    position: absolute; width: 110%; height: 90%; top: -10%; right: -25%;
+    background: radial-gradient(ellipse 55% 45% at 80% 22%, rgba(166,167,245,0.36) 0%, transparent 65%);
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 2.5rem;
+    background: rgba(244, 246, 251, 0.78);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(229,233,239,0.5);
+  }
+  .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; }
+  .brand-mark { width: 30px; height: 30px; flex-shrink: 0; }
+  .brand-name { font-family: var(--font-serif); font-style: italic; font-size: 1.55rem; color: var(--ink); letter-spacing: -0.01em; line-height: 1; }
+  .brand-name::after { content: '.'; color: var(--mint-deep); }
+  .nav-links { display: flex; gap: 1.6rem; list-style: none; align-items: center; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 500; color: var(--ink);
+    text-decoration: none; transition: color 0.2s; position: relative; padding: 2px 0;
+  }
+  .nav-links a:hover { color: var(--mint-deep); }
+  .nav-links a.active { color: var(--mint-deep); }
+  .nav-links a.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 2px;
+    background: linear-gradient(90deg, var(--mint-deep), var(--lavender)); border-radius: 2px;
+  }
+  .nav-cta {
+    background: var(--mint-2); color: var(--ink) !important;
+    padding: 0.58rem 1.15rem; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.02em; text-decoration: none;
+    box-shadow: var(--shadow-mint); transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: var(--shadow-mint-lg); }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 6.5rem 2.5rem 4rem; max-width: 1160px; margin: 0 auto; }
+
+  /* ─── EYEBROW PILL ─── */
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; background: rgba(167, 232, 217, 0.32); border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; color: var(--ink);
+    margin-bottom: 1.4rem; text-transform: uppercase;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--mint-deep);
+    box-shadow: 0 0 0 0 rgba(91,191,164,0.6); animation: pulse-dot 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.55; box-shadow: 0 0 0 0 rgba(91,191,164,0.6); }
+    50% { transform: scale(1.18); opacity: 1; box-shadow: 0 0 10px 2px rgba(91,191,164,0.5); }
+  }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 92vh; display: flex; flex-direction: column; justify-content: center;
+    padding-top: 8rem;
+  }
+  .hero-inner { max-width: 900px; }
+  .display {
+    font-family: var(--font-sans); font-size: clamp(2.6rem, 6.5vw, 4.5rem);
+    line-height: 1.05; font-weight: 700; letter-spacing: -0.025em; color: var(--ink);
+  }
+  .display .accent {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--mint-deep); letter-spacing: -0.005em; font-size: 1.12em; line-height: 1;
+  }
+  .display .dot { color: var(--mint-deep); }
+  .hero-sub { font-size: 1.12rem; color: var(--muted); margin-top: 1.6rem; max-width: 620px; line-height: 1.7; }
+  .hero-sub .em { font-family: var(--font-serif); font-style: italic; color: var(--mint-text); font-size: 1.15em; }
+  .hero-cta-row { display: flex; gap: 0.85rem; margin-top: 2.4rem; flex-wrap: wrap; align-items: center; }
+  .cta-pill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    height: 52px; padding: 0 22px; background: var(--mint-2); color: var(--ink);
+    border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 800;
+    letter-spacing: 0.2px; border: none; cursor: pointer; text-decoration: none;
+    box-shadow: var(--shadow-mint); transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .cta-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-mint-lg); }
+  .cta-pill .chev { width: 18px; height: 18px; color: var(--ink); flex-shrink: 0; }
+  .cta-ghost {
+    display: inline-flex; align-items: center; gap: 8px; height: 52px; padding: 0 20px;
+    border-radius: 999px; border: 1px solid var(--border); background: rgba(255,255,255,0.6);
+    color: var(--ink); font-size: 14px; font-weight: 600; text-decoration: none;
+    transition: border-color 0.2s, transform 0.18s;
+  }
+  .cta-ghost:hover { border-color: rgba(91,191,164,0.45); transform: translateY(-2px); }
+
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2.2rem; }
+  .hero-tag {
+    font-size: 0.72rem; color: var(--ink); background: rgba(255,255,255,0.7);
+    border: 1px solid var(--border); padding: 0.35rem 0.75rem; border-radius: 999px; font-weight: 500;
+  }
+
+  /* ─── SECTION HEADING ─── */
+  .section-head { max-width: 720px; }
+  .section-kick {
+    font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--mint-text); font-weight: 600; margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-size: clamp(1.9rem, 4.2vw, 2.8rem); line-height: 1.1; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--ink); margin-bottom: 0.9rem;
+  }
+  .section-title .accent {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--mint-deep); font-size: 1.12em; letter-spacing: -0.005em;
+  }
+  .section-lead { font-size: 1rem; color: var(--muted); max-width: 660px; line-height: 1.7; }
+  .section-lead b { color: var(--ink); font-weight: 600; }
+
+  /* ─── CHIPS (tier / wave) ─── */
+  .chips { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .chip {
+    font-family: var(--font-mono); font-size: 0.6rem; font-weight: 600; letter-spacing: 0.04em;
+    padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+  }
+  .chip-tier { background: var(--primary-50); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.28); }
+  .chip-tier.t4 { background: rgba(14,21,48,0.06); color: var(--ink); border-color: rgba(14,21,48,0.18); }
+  .chip-tier.t3 { background: rgba(242,183,102,0.16); color: #b5761a; border-color: rgba(242,183,102,0.35); }
+  .chip-wave { background: rgba(166,167,245,0.14); color: #5a5bd6; border: 1px solid rgba(166,167,245,0.3); }
+  .chip-wave.w1 { background: rgba(91,191,164,0.14); color: var(--mint-text); border-color: rgba(91,191,164,0.3); }
+  .chip-wave.w3 { background: rgba(242,183,102,0.14); color: #b5761a; border-color: rgba(242,183,102,0.3); }
+
+  /* ─── AGENT CARDS ─── */
+  .agents-grid { display: flex; flex-direction: column; gap: 1rem; margin-top: 2.5rem; }
+  .agent-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    overflow: hidden; transition: box-shadow 0.3s, border-color 0.3s;
+  }
+  .agent-card:hover { box-shadow: var(--shadow-md); border-color: rgba(91,191,164,0.3); }
+  .agent-card.open { border-color: rgba(91,191,164,0.4); box-shadow: var(--shadow-md); }
+  .agent-head {
+    width: 100%; background: none; border: none; cursor: pointer; text-align: left;
+    display: flex; align-items: center; gap: 1rem; padding: 1.4rem 1.6rem;
+    font-family: inherit; color: var(--ink);
+  }
+  .agent-ic {
+    width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; color: var(--ink);
+    box-shadow: 0 6px 14px rgba(91,191,164,0.22);
+  }
+  .agent-ic svg { width: 23px; height: 23px; }
+  .agent-ic.legal { background: linear-gradient(135deg, var(--mint), var(--lavender)); }
+  .agent-ic.people { background: linear-gradient(135deg, var(--blue), var(--lavender)); }
+  .agent-ic.corpus { background: linear-gradient(135deg, var(--mint), var(--mint-2)); }
+  .agent-meta { flex: 1; min-width: 0; }
+  .agent-name { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+  .agent-name .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); font-size: 1.1em; }
+  .agent-tag { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+  .agent-chev { width: 20px; height: 20px; color: var(--muted-2); flex-shrink: 0; transition: transform 0.3s; }
+  .agent-card.open .agent-chev { transform: rotate(90deg); color: var(--mint-deep); }
+  .agent-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .agent-card.open .agent-body { max-height: 640px; }
+  .agent-body-inner { padding: 0 1.6rem 1.6rem 1.6rem; border-top: 1px solid var(--border); margin: 0 0 0 0; }
+  .agent-body-inner { padding-top: 1.2rem; }
+  .agent-does { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1.1rem; }
+  @media (max-width: 640px) { .agent-does { grid-template-columns: 1fr; } .agent-chips-row { margin-left: 0 !important; } }
+  .does-item {
+    background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+    padding: 0.8rem 0.95rem; font-size: 0.86rem; color: var(--ink); line-height: 1.5;
+    display: flex; gap: 0.6rem; align-items: flex-start;
+  }
+  .does-item .tick { color: var(--mint-deep); flex-shrink: 0; margin-top: 2px; }
+  .agent-note { font-size: 0.86rem; color: var(--muted); line-height: 1.65; }
+  .agent-note b { color: var(--ink); font-weight: 600; }
+  .agent-foot { display: flex; align-items: center; gap: 0.9rem; margin-top: 1.1rem; flex-wrap: wrap; }
+  .agent-foot .lbl { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted-2); }
+  .agent-head .chips { margin-left: auto; }
+  @media (max-width: 560px) {
+    .agent-head { flex-wrap: wrap; }
+    .agent-head .chips { margin-left: 58px; order: 3; width: 100%; }
+    .agent-chev { position: absolute; }
+  }
+
+  /* ─── HOW IT WORKS / FLYWHEEL ─── */
+  #how { background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(91,191,164,0.07), transparent 70%); }
+  .cross-note {
+    display: flex; gap: 1rem; align-items: flex-start; margin-top: 2rem;
+    background: linear-gradient(135deg, rgba(240,251,248,0.7), rgba(255,255,255,0.5));
+    border: 1px solid var(--border); border-radius: 18px; padding: 1.3rem 1.5rem;
+  }
+  .cross-note .ic {
+    width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--mint), var(--lavender)); color: var(--ink);
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 14px rgba(91,191,164,0.2);
+  }
+  .cross-note .body strong { display: block; font-size: 0.98rem; color: var(--ink); margin-bottom: 0.25rem; }
+  .cross-note .body strong .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); }
+  .cross-note .body span { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+
+  .fly-wrap { margin-top: 2.75rem; }
+  .fly-toolbar { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1.5rem; }
+  .fly-toggle { display: inline-flex; background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 4px; box-shadow: var(--shadow-sm); }
+  .fly-toggle button {
+    font-family: inherit; font-size: 0.8rem; font-weight: 700; border: none; cursor: pointer;
+    padding: 0.5rem 1rem; border-radius: 999px; background: none; color: var(--muted); transition: all 0.2s;
+  }
+  .fly-toggle button.on { color: var(--ink); box-shadow: var(--shadow-sm); }
+  .fly-toggle button.mode-in.on { background: rgba(167,232,217,0.5); }
+  .fly-toggle button.mode-out.on { background: rgba(166,167,245,0.35); }
+  .fly-hint { font-size: 0.8rem; color: var(--muted); }
+
+  .fly-stage-card {
+    background: linear-gradient(180deg, #0E1530 0%, #0B1126 100%);
+    border-radius: 26px; padding: 1.75rem; position: relative; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(14,21,48,0.28);
+  }
+  .fly-stage-card::before {
+    content: ''; position: absolute; top: -60px; right: -40px; width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,232,217,0.22), transparent 70%); pointer-events: none;
+  }
+  .fly-stage-card::after {
+    content: ''; position: absolute; bottom: -70px; left: -30px; width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(166,167,245,0.20), transparent 70%); pointer-events: none;
+  }
+  .fly-stage { position: relative; width: 100%; aspect-ratio: 1 / 1; max-width: 560px; margin: 0 auto; }
+  .fly-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
+  .fly-line { stroke-width: 1.6; fill: none; opacity: 0.4; transition: opacity 0.3s, stroke 0.3s; }
+  .fly-line.active { opacity: 1; stroke-width: 2.4; }
+  .fly-flow { stroke-dasharray: 4 7; animation: flow-in 1.1s linear infinite; }
+  .mode-out-active .fly-flow { animation: flow-out 1.1s linear infinite; }
+  @keyframes flow-in { to { stroke-dashoffset: -22; } }
+  @keyframes flow-out { to { stroke-dashoffset: 22; } }
+
+  .fly-node {
+    position: absolute; transform: translate(-50%, -50%); z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; width: 92px;
+  }
+  .fly-node .disc {
+    width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); color: #fff;
+    transition: transform 0.25s, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  }
+  .fly-node .disc svg { width: 21px; height: 21px; }
+  .fly-node .lbl { font-size: 0.66rem; font-weight: 600; color: rgba(240,243,247,0.8); text-align: center; line-height: 1.2; }
+  .fly-node:hover .disc, .fly-node.sel .disc { transform: scale(1.12); background: rgba(167,232,217,0.22); border-color: rgba(167,232,217,0.6); box-shadow: 0 0 22px rgba(167,232,217,0.35); }
+  .fly-node:focus-visible .disc { outline: 2px solid var(--mint); outline-offset: 3px; }
+  .fly-node.corp .disc { background: rgba(166,167,245,0.2); border-color: rgba(166,167,245,0.5); }
+
+  .fly-core {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3;
+    width: 40%; aspect-ratio: 1; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; text-align: center;
+    background: radial-gradient(circle at 35% 30%, rgba(167,232,217,0.9), rgba(91,191,164,0.75) 45%, rgba(166,167,245,0.7) 100%);
+    box-shadow: 0 0 0 8px rgba(167,232,217,0.08), 0 0 40px rgba(91,191,164,0.5), inset 0 0 30px rgba(255,255,255,0.35);
+    color: var(--ink); padding: 0.6rem;
+  }
+  .fly-core .brain { font-size: 1.4rem; line-height: 1; margin-bottom: 2px; }
+  .fly-core .ct { font-size: 0.82rem; font-weight: 800; letter-spacing: -0.01em; }
+  .fly-core .ct .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
+  .fly-core .cs { font-family: var(--font-mono); font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(14,21,48,0.62); }
+  .fly-core-pulse { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 40%; aspect-ratio: 1; border-radius: 50%; z-index: 2; border: 1.5px solid rgba(167,232,217,0.5); animation: corepulse 3s ease-out infinite; }
+  @keyframes corepulse { 0% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 100% { transform: translate(-50%,-50%) scale(1.9); opacity: 0; } }
+
+  .fly-caption {
+    margin-top: 1.4rem; background: #fff; border: 1px solid var(--border); border-radius: 16px;
+    padding: 1.1rem 1.3rem; min-height: 84px; box-shadow: var(--shadow-sm);
+  }
+  .fly-caption .cap-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+  .fly-caption .cap-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint-deep); flex-shrink: 0; }
+  .fly-caption h4 { font-size: 0.98rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .fly-caption p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .fly-caption p b { color: var(--ink); font-weight: 600; }
+
+  .fly-legend { display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 1.2rem; }
+  .fly-leg { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--muted); }
+  .fly-leg .sw { width: 22px; height: 3px; border-radius: 2px; }
+
+  /* gates row */
+  .gates { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  @media (max-width: 720px) { .gates { grid-template-columns: 1fr; } }
+  .gate {
+    background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 1.3rem 1.4rem;
+    display: flex; gap: 0.9rem; align-items: flex-start;
+  }
+  .gate .gic { width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--ink); }
+  .gate.legal .gic { background: rgba(14,21,48,0.07); color: var(--ink); }
+  .gate.hr .gic { background: linear-gradient(135deg, var(--blue), var(--lavender)); }
+  .gate .gb strong { display: block; font-size: 0.95rem; color: var(--ink); margin-bottom: 0.25rem; }
+  .gate .gb span { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ─── HOW IT CONNECTS ─── */
+  #connect { background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(166,167,245,0.10), transparent 70%); }
+  .connect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; margin-top: 2.5rem; }
+  @media (max-width: 860px) { .connect-grid { grid-template-columns: 1fr; } }
+  .con-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 1.6rem 1.7rem;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .con-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(91,191,164,0.3); }
+  .con-card .ic {
+    width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    color: var(--ink); margin-bottom: 1rem; box-shadow: 0 6px 14px rgba(91,191,164,0.2);
+  }
+  .con-card .ic.a { background: linear-gradient(135deg, var(--mint), var(--mint-2)); }
+  .con-card .ic.b { background: linear-gradient(135deg, var(--mint), var(--lavender)); }
+  .con-card .ic.c { background: linear-gradient(135deg, var(--blue), var(--lavender)); }
+  .con-card .ic.d { background: rgba(14,21,48,0.08); color: var(--ink); }
+  .con-card h3 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+  .con-card h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); font-size: 1.1em; }
+  .con-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+  .con-card p b { color: var(--ink); font-weight: 600; }
+
+  /* two-layer memory model */
+  .memory-model { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .mem-layer { border-radius: 12px; padding: 0.75rem 0.95rem; border: 1px solid var(--border); }
+  .mem-layer.skills { background: rgba(91,191,164,0.09); border-color: rgba(91,191,164,0.28); }
+  .mem-layer.customers { background: rgba(166,167,245,0.1); border-color: rgba(166,167,245,0.3); }
+  .mem-layer .ml-h { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 700; color: var(--ink); }
+  .mem-layer .ml-h .tag { font-family: var(--font-mono); font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; }
+  .mem-layer.skills .tag { background: rgba(91,191,164,0.2); color: var(--mint-text); }
+  .mem-layer.customers .tag { background: rgba(166,167,245,0.22); color: #5a5bd6; }
+  .mem-layer .ml-d { font-size: 0.82rem; color: var(--muted); line-height: 1.55; margin-top: 3px; }
+
+  /* propose/approve banner */
+  .approve-banner {
+    margin-top: 2.5rem; background: linear-gradient(135deg, #0E1530 0%, #1a2348 100%);
+    border-radius: 22px; padding: 2.25rem; color: #fff; position: relative; overflow: hidden;
+  }
+  .approve-banner::before { content: ''; position: absolute; top: -50px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(167,232,217,0.26), transparent 70%); }
+  .approve-banner::after { content: ''; position: absolute; bottom: -60px; left: -30px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(166,167,245,0.22), transparent 70%); }
+  .approve-banner h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.6rem; position: relative; }
+  .approve-banner h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint); font-size: 1.1em; }
+  .approve-banner .lead { font-size: 0.95rem; color: rgba(255,255,255,0.78); max-width: 620px; line-height: 1.7; position: relative; }
+  .approve-flow { display: flex; align-items: stretch; gap: 0.75rem; margin-top: 1.75rem; flex-wrap: wrap; position: relative; }
+  .flow-step { flex: 1; min-width: 150px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 1rem 1.1rem; }
+  .flow-step .fs-k { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.4rem; }
+  .flow-step .fs-t { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
+  .flow-step .fs-d { font-size: 0.78rem; color: rgba(255,255,255,0.66); line-height: 1.5; }
+  .flow-step.human { background: rgba(167,232,217,0.14); border-color: rgba(167,232,217,0.4); }
+  .flow-arrow { display: flex; align-items: center; color: rgba(255,255,255,0.4); flex-shrink: 0; }
+  @media (max-width: 720px) { .flow-arrow { transform: rotate(90deg); align-self: center; } }
+
+  /* ─── FOOTER ─── */
+  footer { border-top: 1px solid var(--border); background: #fff; padding: 3rem 2.5rem 2rem; }
+  .footer-grid { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2.5rem; }
+  @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+  .foot-brand { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.85rem; }
+  .foot-tag { font-size: 0.84rem; color: var(--muted); max-width: 360px; line-height: 1.6; }
+  .foot-col h5 { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); margin-bottom: 0.85rem; }
+  .foot-col a { display: block; font-size: 0.84rem; color: var(--muted); text-decoration: none; padding: 0.28rem 0; transition: color 0.2s; }
+  .foot-col a:hover { color: var(--mint-deep); }
+  .foot-base {
+    max-width: 1160px; margin: 2.25rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 0.9rem;
+  }
+  .foot-base .copy { font-size: 0.74rem; color: var(--muted-2); font-family: var(--font-mono); letter-spacing: 0.05em; }
+  .foot-base .tm { font-size: 0.78rem; color: var(--muted); max-width: 900px; line-height: 1.6; }
+
+  /* ─── FADE-UP ─── */
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  :focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 2px; border-radius: 4px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; scroll-behavior: auto !important; }
+    .fade-up { opacity: 1; transform: none; }
+    .fly-flow { stroke-dasharray: 4 7; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.3rem; }
+    .nav-links li.hide-sm { display: none; }
+    section { padding: 5.5rem 1.3rem 3.5rem; }
+    .fly-node { width: 74px; }
+    .fly-node .disc { width: 38px; height: 38px; }
+    .fly-node .disc svg { width: 18px; height: 18px; }
+    .fly-node .lbl { font-size: 0.58rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="mint-glow"></div>
+  <div class="lav-glow"></div>
+</div>
+
+<nav>
+  <a href="index.html" class="brand" aria-label="Nova FT home">
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="brand-n" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#5BBFA4"/>
+          <stop offset="1" stop-color="#A6A7F5"/>
+        </linearGradient>
+      </defs>
+      <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92"
+            fill="none" stroke="url(#brand-n)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-name">Nova</span>
+  </a>
+  <ul class="nav-links">
+    <li class="hide-sm"><a href="#hero" data-spy="hero">Overview</a></li>
+    <li class="hide-sm"><a href="#agents" data-spy="agents">The agents</a></li>
+    <li class="hide-sm"><a href="#how" data-spy="how">How it works</a></li>
+    <li class="hide-sm"><a href="#connect" data-spy="connect">How it connects</a></li>
+    <li><a href="index.html" class="nav-cta">Nova FT home</a></li>
+  </ul>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="eyebrow fade-up"><span class="dot"></span>Corporate · Department 8 of 8</div>
+    <h1 class="display fade-up">
+      Nova AI <span class="accent">Corporate<span class="dot">.</span></span><br>
+      The connective tissue.
+    </h1>
+    <p class="hero-sub fade-up">Every other department ships product, wins customers, keeps the lights on. Corporate is the department that holds it all together — <span class="em">legal, people, and the shared brain</span> that makes the whole agent fleet smarter over time.</p>
+    <div class="hero-cta-row fade-up">
+      <a href="#agents" class="cta-pill">
+        Meet the agents
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </a>
+      <a href="#how" class="cta-ghost">See the flywheel</a>
+    </div>
+    <div class="hero-tags fade-up">
+      <span class="hero-tag">Legal &amp; Contracts</span>
+      <span class="hero-tag">People &amp; HR</span>
+      <span class="hero-tag">Knowledge &amp; Corpus</span>
+      <span class="hero-tag">Cross-cutting support</span>
+      <span class="hero-tag">Agents propose · humans approve</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── THE AGENTS ─── -->
+<section id="agents">
+  <div class="section-head fade-up">
+    <div class="section-kick">The agents</div>
+    <h2 class="section-title">Three agents, one <span class="accent">backbone</span>.</h2>
+    <p class="section-lead">Each carries an <b>autonomy tier</b> — how much it may do on its own, from T1 (draft only) to T4 (nothing ships without a named human) — and a <b>build wave</b> that says when it comes online. Tap a card to open it.</p>
+  </div>
+
+  <div class="agents-grid" id="agents-grid"></div>
+</section>
+
+<!-- ─── HOW IT WORKS ─── -->
+<section id="how">
+  <div class="section-head fade-up">
+    <div class="section-kick">How it works</div>
+    <h2 class="section-title">A department that runs <span class="accent">sideways</span>.</h2>
+    <p class="section-lead">Marketing, Sales, Engineering and the rest run down their own lane. Corporate runs <b>across</b> all of them — the horizontal layer every vertical leans on. Legal papers the deals. People onboard the humans. And the Knowledge / Corpus Agent curates the memory the whole fleet shares.</p>
+  </div>
+
+  <div class="cross-note fade-up">
+    <div class="ic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M12 4v16"/><circle cx="12" cy="12" r="9"/></svg>
+    </div>
+    <div class="body">
+      <strong>Corporate is <span class="it">cross-cutting</span>, not a silo.</strong>
+      <span>It has no customer of its own and no product to ship. Its customer is <b>the rest of the company</b> — the seven other departments and the ~40 agents inside them. That is why it sits at the centre of the diagram below rather than in a lane of its own.</span>
+    </div>
+  </div>
+
+  <!-- FLYWHEEL -->
+  <div class="fly-wrap fade-up">
+    <div class="fly-toolbar">
+      <div class="fly-toggle" role="group" aria-label="Flywheel direction">
+        <button type="button" class="mode-in on" id="btn-in" aria-pressed="true">Learnings flow in</button>
+        <button type="button" class="mode-out" id="btn-out" aria-pressed="false">Skills flow out</button>
+      </div>
+      <span class="fly-hint" id="fly-hint">Hover or tap a department to trace it. The centre is the shared brain.</span>
+    </div>
+
+    <div class="fly-stage-card">
+      <div class="fly-stage" id="fly-stage">
+        <svg class="fly-svg" id="fly-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg-in" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#A7E8D9"/><stop offset="1" stop-color="#5BBFA4"/>
+            </linearGradient>
+            <linearGradient id="lg-out" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#A6A7F5"/><stop offset="1" stop-color="#7DBCFD"/>
+            </linearGradient>
+          </defs>
+          <g id="fly-lines"></g>
+        </svg>
+        <div class="fly-core-pulse" aria-hidden="true"></div>
+        <div class="fly-core" role="img" aria-label="Shared corpus, the brain">
+          <span class="brain">🧠</span>
+          <span class="ct">Shared <span class="it">corpus</span></span>
+          <span class="cs">the brain</span>
+        </div>
+        <!-- nodes injected here -->
+      </div>
+    </div>
+
+    <div class="fly-legend">
+      <div class="fly-leg"><span class="sw" style="background:linear-gradient(90deg,#A7E8D9,#5BBFA4)"></span>Learnings in — every agent writes back what it learned</div>
+      <div class="fly-leg"><span class="sw" style="background:linear-gradient(90deg,#A6A7F5,#7DBCFD)"></span>Skills out — reusable skills &amp; context flow back to the fleet</div>
+    </div>
+
+    <div class="fly-caption" id="fly-caption" aria-live="polite">
+      <div class="cap-head"><span class="cap-dot"></span><h4 id="cap-title">The flywheel</h4></div>
+      <p id="cap-body">Every department's agents finish work and <b>write their learnings back</b> to the shared corpus. The Knowledge / Corpus Agent curates it — deduping, tagging, flagging stale memory — then serves it back out as <b>reusable skills and context</b>. More work makes the corpus richer; a richer corpus makes every future agent sharper. That compounding loop is the flywheel.</p>
+    </div>
+  </div>
+
+  <!-- GATES -->
+  <div class="gates fade-up">
+    <div class="gate legal">
+      <div class="gic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-2 6a4 4 0 0 0 8 0z"/><path d="M19 7l2 6a4 4 0 0 1-8 0z"/><path d="M8 21h8"/></svg>
+      </div>
+      <div class="gb">
+        <strong>Legal gates the contracts</strong>
+        <span>Drafting is autonomous, but a contract does not close until a named human signs. Contract close is a <b>tier-4</b> checkpoint — the Legal Agent hands a clean, risk-flagged draft to a person and waits.</span>
+      </div>
+    </div>
+    <div class="gate hr">
+      <div class="gic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div class="gb">
+        <strong>People handles the humans</strong>
+        <span>The HR Agent runs contractor and employee onboarding, right-to-work checks and the paperwork — but <b>equity and options grants are tier-4</b> and only ever confirmed by a human.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT CONNECTS ─── -->
+<section id="connect">
+  <div class="section-head fade-up">
+    <div class="section-kick">How it connects</div>
+    <h2 class="section-title">Wired into <span class="accent">everything</span>.</h2>
+    <p class="section-lead">Corporate touches every other department. Here is where the wires actually run — and the one rule that never bends.</p>
+  </div>
+
+  <div class="connect-grid">
+    <div class="con-card fade-up">
+      <div class="ic a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0v-1a3 3 0 0 0 2-5 3 3 0 0 0-2-5V5a3 3 0 0 0-3-3z"/></svg></div>
+      <h3>Corpus underpins <span class="it">every</span> memory</h3>
+      <p>No agent has a private brain. Every agent's memory reads from the same two-layer model the Corpus Agent curates — so a lesson learned in Engineering is available to Sales the next morning.</p>
+      <div class="memory-model">
+        <div class="mem-layer skills">
+          <div class="ml-h"><span class="tag">Layer 1</span> Skills &amp; know-how</div>
+          <div class="ml-d">Reusable, customer-agnostic learnings: patterns, house-style, playbooks, error dictionaries. Written back by every department, shared by all.</div>
+        </div>
+        <div class="mem-layer customers">
+          <div class="ml-h"><span class="tag">Layer 2</span> Customer context</div>
+          <div class="ml-d">Per-bank facts and history, isolated to that customer. Skills apply across everyone; customer context never leaks between banks.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="con-card fade-up">
+      <div class="ic b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
+      <h3>Legal supports <span class="it">Sales</span></h3>
+      <p>When Sales &amp; Growth reaches terms, the Legal Agent drafts the <b>contract</b>, IP-assignment and NDAs, flags risky terms, and tracks the paper to signature. Sales moves fast; Legal keeps it sound.</p>
+      <p style="margin-top:0.7rem;">It also supports <b>Compliance</b> — generating and reviewing the <b>DPAs</b> that sit under every data-processing arrangement, so the ISO 42001 / GDPR story holds up.</p>
+    </div>
+
+    <div class="con-card fade-up">
+      <div class="ic c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></div>
+      <h3>People runs the <span class="it">roster</span></h3>
+      <p>Whether Nova FT hires a contractor or an employee, the HR Agent runs onboarding, right-to-work, and equity/options admin end to end — so headcount grows without the founders becoming a bottleneck.</p>
+      <p style="margin-top:0.7rem;">Everything it touches feeds the corpus too: a smoother onboarding this quarter is a reusable playbook the next.</p>
+    </div>
+
+    <div class="con-card fade-up">
+      <div class="ic d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3>The rule that never bends</h3>
+      <p><b>Agents propose, humans approve.</b> Corporate carries the two decisions Nova FT will never automate: <b>contract close</b> and <b>equity</b>. Both are tier-4, human-only. The agent does the 80% — the draft, the checks, the tracking — and stops at the line.</p>
+    </div>
+  </div>
+
+  <!-- PROPOSE / APPROVE -->
+  <div class="approve-banner fade-up">
+    <h3>Agents propose. Humans <span class="it">approve</span>.</h3>
+    <p class="lead">For the highest-stakes work, autonomy tops out at proposal. Here is the tier-4 path a contract or an equity grant actually walks:</p>
+    <div class="approve-flow">
+      <div class="flow-step">
+        <div class="fs-k">Tier 2–3</div>
+        <div class="fs-t">Agent drafts</div>
+        <div class="fs-d">Legal / HR Agent prepares the contract or grant, pulling clauses and context from the corpus.</div>
+      </div>
+      <div class="flow-arrow" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="flow-step">
+        <div class="fs-k">Tier 3</div>
+        <div class="fs-t">Agent flags &amp; tracks</div>
+        <div class="fs-d">Risky terms surfaced, versions tracked, everything staged for a clean human decision.</div>
+      </div>
+      <div class="flow-arrow" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="flow-step human">
+        <div class="fs-k">Tier 4 · human only</div>
+        <div class="fs-t">Human signs</div>
+        <div class="fs-d">A named person closes the contract or confirms the equity. No agent ever crosses this line.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="foot-brand">
+        <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92"
+                fill="none" stroke="url(#brand-n)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">Nova</span>
+      </div>
+      <p class="foot-tag">Nova FT. An AI-native UK FinTech building core banking platforms for banks — Banking, Reimagined. Corporate is the connective tissue: legal, people, and the shared brain.</p>
+    </div>
+    <div class="foot-col">
+      <h5>Departments</h5>
+      <a href="cortex.html">Cortex</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="support.html">Support</a>
+      <a href="compliance.html">Compliance</a>
+    </div>
+    <div class="foot-col">
+      <h5>Company</h5>
+      <a href="index.html">Home</a>
+      <a href="#agents">The agents</a>
+      <a href="#how">How it works</a>
+      <a href="#connect">How it connects</a>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span class="copy">© 2026 Nova Financial Technologies Limited. All rights reserved.</span>
+    <span class="tm">"Nova", "Nova FT", the Nova "n." wordmark and the Nova logo are trade marks of Nova Financial Technologies Limited. The contents of this page — including all text, design, logos, illustrations and code — are protected by copyright and other intellectual property rights and may not be copied, reproduced or used without our prior written consent.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ─── AGENT CARDS ─── */
+  var AGENTS = [
+    {
+      key: "legal", icon: "legal",
+      name: 'Legal / <span class="it">Contracts</span> Agent',
+      tag: "Papers the deals and guards the terms",
+      tier: "2–4", tierClass: "t4", wave: "3", waveClass: "w3",
+      does: [
+        "Draft &amp; track contracts, DPAs and NDAs end to end",
+        "Insert and verify IP-assignment clauses on every engagement",
+        "Read counter-party paper and flag risky or non-standard terms",
+        "Stage a clean, annotated draft for a human to sign"
+      ],
+      note: "Autonomy climbs with the stakes: routine drafting and tracking runs at <b>tier 2–3</b>, but <b>contract close is tier 4</b> — a named human signs, always. The agent removes the grind, never the accountability."
+    },
+    {
+      key: "people", icon: "people",
+      name: 'People / <span class="it">HR</span> Agent',
+      tag: "Grows the team without a bottleneck",
+      tier: "2", tierClass: "", wave: "3", waveClass: "w3",
+      does: [
+        "Run contractor &amp; employee onboarding start to finish",
+        "Handle right-to-work and identity checks",
+        "Administer equity and options paperwork",
+        "Keep the roster, records and offboarding tidy"
+      ],
+      note: "Operates at a steady <b>tier 2</b> across the people lifecycle — but <b>equity and options grants are tier-4</b>, human-confirmed only. Onboarding gets faster every cycle because each run writes a better playbook back to the corpus."
+    },
+    {
+      key: "corpus", icon: "corpus",
+      name: 'Knowledge / <span class="it">Corpus</span> Agent',
+      tag: "Curates the shared brain — the fleet's memory",
+      tier: "1", tierClass: "", wave: "2", waveClass: "",
+      does: [
+        "Write learnings back from every department's agents",
+        "Curate the shared corpus — dedupe, tag, structure",
+        "Flag stale memory before it misleads the fleet",
+        "Serve reusable skills &amp; context back out"
+      ],
+      note: "The quiet compounding engine. It runs at a deliberately conservative <b>tier 1</b> — it organises and proposes, it never silently rewrites the truth. It is why the whole fleet gets smarter over time instead of relearning the same lessons."
+    }
+  ];
+
+  var ICONS = {
+    legal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7l-2 6a4 4 0 0 0 8 0z"/><path d="M19 7l2 6a4 4 0 0 1-8 0z"/><path d="M8 21h8"/></svg>',
+    people: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    corpus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 2 5v1a3 3 0 0 0 6 0v-1a3 3 0 0 0 2-5 3 3 0 0 0-2-5V5a3 3 0 0 0-3-3z"/><path d="M12 7v10"/></svg>'
+  };
+
+  var grid = document.getElementById("agents-grid");
+  AGENTS.forEach(function (a, idx) {
+    var card = document.createElement("div");
+    card.className = "agent-card" + (idx === 0 ? " open" : "");
+    var doesHtml = a.does.map(function (d) {
+      return '<div class="does-item"><svg class="tick" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>' + d + '</span></div>';
+    }).join("");
+    card.innerHTML =
+      '<button class="agent-head" aria-expanded="' + (idx === 0 ? "true" : "false") + '">' +
+        '<span class="agent-ic ' + a.icon + '">' + ICONS[a.icon] + '</span>' +
+        '<span class="agent-meta"><span class="agent-name">' + a.name + '</span>' +
+        '<span class="agent-tag">' + a.tag + '</span></span>' +
+        '<span class="chips">' +
+          '<span class="chip chip-tier ' + a.tierClass + '" title="Autonomy tier">T' + a.tier + '</span>' +
+          '<span class="chip chip-wave ' + a.waveClass + '" title="Build wave">Wave ' + a.wave + '</span>' +
+        '</span>' +
+        '<svg class="agent-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+      '</button>' +
+      '<div class="agent-body"><div class="agent-body-inner">' +
+        '<div class="agent-does">' + doesHtml + '</div>' +
+        '<p class="agent-note">' + a.note + '</p>' +
+      '</div></div>';
+    var btn = card.querySelector(".agent-head");
+    btn.addEventListener("click", function () {
+      var open = card.classList.toggle("open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    grid.appendChild(card);
+  });
+
+  /* ─── FLYWHEEL ─── */
+  var DEPTS = [
+    { k: "strategy", n: "Strategy", icon: "M3 3v18h18", extra: "M7 14l3-3 2 2 5-5" },
+    { k: "marketing", n: "Marketing", icon: "M3 11l18-5v12L3 14v-3z", extra: "M11.6 16.8a3 3 0 1 1-5.8-1.6" },
+    { k: "sales", n: "Sales", icon: "M12 2v20", extra: "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" },
+    { k: "product", n: "Product", icon: "M12 2l9 5v10l-9 5-9-5V7z", extra: "M12 12l9-5M12 12v10M12 12L3 7" },
+    { k: "engineering", n: "Engineering", icon: "M16 18l6-6-6-6", extra: "M8 6l-6 6 6 6" },
+    { k: "operations", n: "Operations", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z", extra: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" },
+    { k: "success", n: "Customer Success", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z", extra: "M9 10h.01M15 10h.01" },
+    { k: "corporate", n: "Corporate", icon: "M3 21h18M6 21V7l6-4 6 4v14", extra: "M9 9h.01M15 9h.01M9 13h.01M15 13h.01", corp: true }
+  ];
+
+  var CAPTIONS = {
+    _default_in: { t: "The flywheel", b: 'Every department\'s agents finish work and <b>write their learnings back</b> to the shared corpus. The Corpus Agent curates it, then serves it back out as <b>reusable skills and context</b>. More work makes the corpus richer; a richer corpus makes every future agent sharper.' },
+    _default_out: { t: "Skills flow out", b: 'The corpus is not a graveyard — it is a supply line. Curated <b>skills, patterns and context</b> flow back out to every agent in the fleet, so no one relearns a lesson the company already paid for once.' },
+    strategy: { t: "Strategy → corpus", b: 'Market reads, bets and post-mortems land in the corpus as <b>strategic context</b> — so Sales and Product inherit the reasoning, not just the decision.' },
+    marketing: { t: "Marketing → corpus", b: 'Messaging that lands, positioning that works and campaign results become <b>reusable playbooks</b> the next launch starts from.' },
+    sales: { t: "Sales → corpus", b: 'Winning narratives, objection handling and deal patterns feed back — and Legal draws on the same corpus when it drafts the resulting <b>contract</b>.' },
+    product: { t: "Product → corpus", b: 'Specs, decisions and what-shipped-vs-what-worked write back, so Engineering builds against shared, current intent.' },
+    engineering: { t: "Engineering → corpus", b: 'Code patterns, house-style and error dictionaries are curated into <b>skills</b> every future build reuses — the richest single feed into the brain.' },
+    operations: { t: "Operations → corpus", b: 'Runbooks, incident learnings and process fixes land as reusable operational memory the whole fleet can draw on.' },
+    success: { t: "Customer Success → corpus", b: 'Support resolutions and health signals feed the corpus — Layer-1 skills for everyone, Layer-2 customer context kept isolated per bank.' },
+    corporate: { t: "Corporate curates it all", b: 'The <b>Knowledge / Corpus Agent</b> lives here. It does not just contribute — it <b>owns the loop</b>: writing learnings back, deduping, flagging stale memory, and serving skills out. Corporate is the memory curator for the entire fleet.' }
+  };
+
+  var stage = document.getElementById("fly-stage");
+  var linesG = document.getElementById("fly-lines");
+  var capTitle = document.getElementById("cap-title");
+  var capBody = document.getElementById("cap-body");
+  var flyStageCard = document.querySelector(".fly-stage-card");
+
+  var cx = 50, cy = 50, R = 40, coreR = 20;
+  var mode = "in";
+  var selected = null;
+
+  DEPTS.forEach(function (d, i) {
+    var ang = (-90 + i * (360 / DEPTS.length)) * Math.PI / 180;
+    var x = cx + R * Math.cos(ang);
+    var y = cy + R * Math.sin(ang);
+    d._x = x; d._y = y; d._ang = ang;
+
+    // line from node toward core edge
+    var ix = cx + coreR * Math.cos(ang);
+    var iy = cy + coreR * Math.sin(ang);
+    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x); line.setAttribute("y1", y);
+    line.setAttribute("x2", ix); line.setAttribute("y2", iy);
+    line.setAttribute("class", "fly-line fly-flow");
+    line.setAttribute("stroke", "url(#lg-in)");
+    line.setAttribute("vector-effect", "non-scaling-stroke");
+    line.dataset.k = d.k;
+    linesG.appendChild(line);
+    d._line = line;
+
+    // node button
+    var node = document.createElement("button");
+    node.type = "button";
+    node.className = "fly-node" + (d.corp ? " corp" : "");
+    node.style.left = x + "%";
+    node.style.top = y + "%";
+    node.setAttribute("aria-label", d.n + " agents — trace flow with the shared corpus");
+    var extra = d.extra ? '<path d="' + d.extra + '"/>' : "";
+    node.innerHTML =
+      '<span class="disc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + d.icon + '"/>' + extra + '</svg></span>' +
+      '<span class="lbl">' + d.n + '</span>';
+
+    function activate() {
+      selected = d.k;
+      DEPTS.forEach(function (o) { o._line.classList.toggle("active", o.k === d.k); });
+      Array.prototype.forEach.call(stage.querySelectorAll(".fly-node"), function (n) { n.classList.remove("sel"); });
+      node.classList.add("sel");
+      var c = CAPTIONS[d.k];
+      capTitle.innerHTML = c.t; capBody.innerHTML = c.b;
+    }
+    function deactivate() {
+      if (selected !== d.k) return;
+      // keep last selection on the caption; only clear line emphasis on mouseleave if not clicked
+    }
+    node.addEventListener("mouseenter", activate);
+    node.addEventListener("focus", activate);
+    node.addEventListener("click", activate);
+    stage.appendChild(node);
+  });
+
+  function setMode(m) {
+    mode = m;
+    var isIn = m === "in";
+    flyStageCard.parentElement.classList.toggle("mode-out-active", !isIn);
+    document.getElementById("btn-in").classList.toggle("on", isIn);
+    document.getElementById("btn-out").classList.toggle("on", !isIn);
+    document.getElementById("btn-in").setAttribute("aria-pressed", isIn ? "true" : "false");
+    document.getElementById("btn-out").setAttribute("aria-pressed", !isIn ? "true" : "false");
+    var stroke = isIn ? "url(#lg-in)" : "url(#lg-out)";
+    DEPTS.forEach(function (d) { d._line.setAttribute("stroke", stroke); });
+    if (!selected) {
+      var c = isIn ? CAPTIONS._default_in : CAPTIONS._default_out;
+      capTitle.innerHTML = c.t; capBody.innerHTML = c.b;
+    }
+  }
+  document.getElementById("btn-in").addEventListener("click", function () { setMode("in"); });
+  document.getElementById("btn-out").addEventListener("click", function () { setMode("out"); });
+  // the wrapper needs the mode-out-active class; place it on fly-wrap
+  var flyWrap = document.querySelector(".fly-wrap");
+  document.getElementById("btn-out").addEventListener("click", function () { flyWrap.classList.add("mode-out-active"); });
+  document.getElementById("btn-in").addEventListener("click", function () { flyWrap.classList.remove("mode-out-active"); });
+
+  /* ─── FADE-UP OBSERVER ─── */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  Array.prototype.forEach.call(document.querySelectorAll(".fade-up"), function (el) { io.observe(el); });
+
+  /* ─── SCROLL-SPY NAV ─── */
+  var spyLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-links a[data-spy]"));
+  var sections = spyLinks.map(function (l) { return document.getElementById(l.getAttribute("data-spy")); });
+  var spyObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        var id = e.target.id;
+        spyLinks.forEach(function (l) { l.classList.toggle("active", l.getAttribute("data-spy") === id); });
+      }
+    });
+  }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+  sections.forEach(function (s) { if (s) spyObserver.observe(s); });
+})();
+</script>
+</body>
+</html>

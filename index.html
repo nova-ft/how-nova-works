@@ -505,6 +505,54 @@
   </div>
 </section>
 
+
+<!-- ─── DEPARTMENTS NAV (added) ─── -->
+<style>
+  #departments .dept-wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  #departments .dept-hub{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    background:linear-gradient(120deg,#0E1530,#0B1126);color:#F0F3F7;border-radius:18px;
+    padding:22px 26px;text-decoration:none;box-shadow:0 18px 38px rgba(91,191,164,.22);
+    border:1px solid rgba(166,167,245,.35);transition:transform .18s ease,box-shadow .18s ease}
+  #departments .dept-hub:hover{transform:translateY(-3px);box-shadow:0 22px 46px rgba(91,191,164,.32)}
+  #departments .dept-hub .h{font-weight:800;font-size:1.15rem;letter-spacing:-.02em}
+  #departments .dept-hub .s{color:#9097A8;font-size:.9rem;margin-top:3px}
+  #departments .dept-hub .go{color:#7CD9C2;font-weight:700;white-space:nowrap}
+  #departments .dept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));
+    gap:16px;margin-top:16px}
+  #departments .dept-card{display:block;background:#fff;border:1px solid #E5E9EF;border-radius:14px;
+    padding:18px 20px;text-decoration:none;box-shadow:0 2px 8px rgba(47,58,70,.06);
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+  #departments .dept-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(91,191,164,.20);
+    border-color:#A7E8D9}
+  #departments .dept-card .t{font-weight:700;color:#0E1530;letter-spacing:-.01em}
+  #departments .dept-card .d{color:#6B7388;font-size:.88rem;margin-top:4px;line-height:1.5}
+  #departments .dept-card .a{color:#5BBFA4;font-weight:700;font-size:.85rem;margin-top:10px}
+</style>
+<section id="departments">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>EXPLORE BY DEPARTMENT</div>
+    <h2 class="section-title">How each <span class="accent">AI department</span> works.</h2>
+    <p class="section-lead">Nova FT runs as eight AI departments, supervised from one control center. Open any department to see its agents, how it works, and how it connects to the rest of the fleet.</p>
+  </div>
+  <div class="dept-wrap">
+    <a class="dept-hub" href="cortex.html">
+      <span><span class="h">Nova Cortex — the control center</span><span class="s">The hub: every department, agent, gate and customer at a glance.</span></span>
+      <span class="go">Open the hub →</span>
+    </a>
+    <div class="dept-grid">
+      <a class="dept-card" href="strategy.html"><div class="t">Strategy &amp; Management</div><div class="d">Steer the company by numbers and narrative.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="marketing.html"><div class="t">Marketing</div><div class="d">Tell the Nova story; fill the top of the funnel.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="sales.html"><div class="t">Sales &amp; Growth</div><div class="d">Find the right banks and close them.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="product.html"><div class="t">Product Office</div><div class="d">Turn a customer need into a buildable spec.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="engineering.html"><div class="t">Engineering</div><div class="d">Build features through the SDLC + Kanban.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="support.html"><div class="t">Support &amp; Operations</div><div class="d">Run the platform; turn problems into tracked fixes.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="compliance.html"><div class="t">Security &amp; Compliance</div><div class="d">GRC-as-code — certifications enforced in the pipeline.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="customer-success.html"><div class="t">Customer Success</div><div class="d">Keep banks live, happy, and growing.</div><div class="a">Open →</div></a>
+      <a class="dept-card" href="corporate.html"><div class="t">Corporate</div><div class="d">Legal, people, and the shared brain.</div><div class="a">Open →</div></a>
+    </div>
+  </div>
+</section>
+
 <!-- ─── 2. THE MODEL ─── -->
 <section id="model">
   <div class="section-head fade-up">

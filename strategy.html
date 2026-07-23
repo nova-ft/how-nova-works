@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova AI Strategy &amp; Management — How It Works</title>
+<meta name="description" content="How Nova FT's Strategy &amp; Management function works: an AI-native fleet of agents steering the company by numbers and narrative. Strategy, planning, board and investor, BizOps metrics, licensing and finance — agents propose, humans approve.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235BBFA4'/%3E%3Cstop offset='1' stop-color='%23A6A7F5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92' fill='none' stroke='url(%23g)' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F4F6FB;
+    --warm: #FBF7F0;
+    --deep: #0B1126;
+    --ink: #0E1530;
+    --muted: #6B7388;
+    --muted-2: #9097A8;
+    --mint: #A7E8D9;
+    --mint-2: #7CD9C2;
+    --mint-deep: #5BBFA4;
+    --mint-text: #1f9c82;
+    --lavender: #A6A7F5;
+    --blue: #7DBCFD;
+    --amber: #F2B766;
+    --card: #FFFFFF;
+    --border: #E5E9EF;
+
+    --shadow-sm: 0 2px 8px rgba(47,58,70,0.06);
+    --shadow-md: 0 12px 32px rgba(47,58,70,0.10);
+    --shadow-mint: 0 10px 22px rgba(91,191,164,0.28);
+    --shadow-mint-lg: 0 18px 38px rgba(91,191,164,0.32);
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+    --font-mono: 'JetBrains Mono', 'Menlo', 'SF Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  a { color: inherit; }
+
+  /* ─── AURORA BACKGROUND ─── */
+  .aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--paper); }
+  .aurora .mint-glow {
+    position: absolute; width: 130%; height: 100%; top: -20%; left: -30%;
+    background: radial-gradient(ellipse 65% 50% at 22% 14%, rgba(167,232,217,0.45) 0%, transparent 65%);
+  }
+  .aurora .lav-glow {
+    position: absolute; width: 110%; height: 90%; top: -10%; right: -25%;
+    background: radial-gradient(ellipse 55% 45% at 80% 22%, rgba(166,167,245,0.30) 0%, transparent 65%);
+  }
+
+  /* ─── NAV / SCROLL-SPY ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 2rem;
+    background: rgba(244, 246, 251, 0.78);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(229,233,239,0.6);
+  }
+  .brand { display: flex; align-items: center; gap: 0.55rem; text-decoration: none; }
+  .brand-mark { width: 28px; height: 28px; flex-shrink: 0; }
+  .brand-name {
+    font-family: var(--font-serif); font-style: italic; font-size: 1.5rem;
+    color: var(--ink); letter-spacing: -0.01em; line-height: 1;
+  }
+  .brand-name .ft { font-size: 0.62em; font-style: normal; font-family: var(--font-sans); font-weight: 800; letter-spacing: 0.02em; margin-left: 0.28em; vertical-align: 0.12em; }
+  .brand-name::after { content: '.'; color: var(--mint-deep); }
+  .nav-links { display: flex; gap: 1.25rem; list-style: none; align-items: center; }
+  .nav-links a {
+    font-size: 0.76rem; font-weight: 600; color: var(--muted);
+    text-decoration: none; transition: color 0.2s; padding: 0.3rem 0; position: relative; white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a.active { color: var(--mint-text); }
+  .nav-links a.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px;
+    background: linear-gradient(90deg, var(--mint-deep), var(--lavender)); border-radius: 2px;
+  }
+  .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 6px; color: var(--ink); }
+  @media (max-width: 860px) {
+    .nav-links {
+      position: absolute; top: 100%; right: 1rem; left: 1rem;
+      flex-direction: column; align-items: flex-start; gap: 0.2rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 0.6rem; box-shadow: var(--shadow-md); display: none;
+    }
+    .nav-links.open { display: flex; }
+    .nav-links a { padding: 0.6rem 0.7rem; width: 100%; font-size: 0.85rem; }
+    .nav-links a.active::after { display: none; }
+    .nav-links a.active { background: rgba(167,232,217,0.28); border-radius: 8px; }
+    .nav-toggle { display: inline-flex; }
+  }
+
+  /* ─── LAYOUT ─── */
+  section { padding: 6.5rem 2rem 4rem; max-width: 1160px; margin: 0 auto; scroll-margin-top: 70px; }
+  @media (max-width: 640px) { section { padding: 5rem 1.2rem 3rem; } }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; background: rgba(167, 232, 217, 0.30); border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; color: var(--ink); margin-bottom: 1.3rem;
+  }
+  .eyebrow.on-dark { background: rgba(167, 232, 217, 0.12); color: var(--mint); }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--mint-deep);
+    animation: pulse-dot 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.55; }
+    50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 10px 2px rgba(91,191,164,0.5); }
+  }
+
+  h2.section-title {
+    font-size: clamp(1.9rem, 4.2vw, 3rem); line-height: 1.06; font-weight: 800;
+    letter-spacing: -0.03em; color: var(--ink);
+  }
+  h2.section-title .accent {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--mint-deep); font-size: 1.1em; letter-spacing: -0.005em;
+  }
+  .section-lead { font-size: 1.05rem; color: var(--muted); margin-top: 1.1rem; max-width: 640px; line-height: 1.65; }
+  .kicker { font-size: 0.72rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--mint-text); margin-bottom: 0.8rem; }
+
+  /* ─── HERO ─── */
+  #hero {
+    position: relative; min-height: 92vh; max-width: none; margin: 0;
+    background: var(--deep); color: #fff; overflow: hidden;
+    display: flex; align-items: center;
+    padding: 8rem 2rem 5rem;
+  }
+  #hero .hero-inner { max-width: 1160px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+  #hero .hero-aurora {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      radial-gradient(ellipse 50% 45% at 18% 18%, rgba(91,191,164,0.30) 0%, transparent 60%),
+      radial-gradient(ellipse 46% 42% at 84% 30%, rgba(166,167,245,0.26) 0%, transparent 62%),
+      radial-gradient(ellipse 60% 50% at 60% 92%, rgba(125,188,253,0.14) 0%, transparent 60%);
+  }
+  .wordmark {
+    display: flex; align-items: baseline; gap: 0.1rem; margin-bottom: 1.6rem;
+  }
+  .wordmark svg { width: clamp(70px, 12vw, 108px); height: auto; }
+  .wordmark .wm-dot { font-family: var(--font-serif); font-size: clamp(3rem,7vw,5rem); color: var(--mint-deep); line-height: 0.6; }
+  h1.hero-title {
+    font-size: clamp(2.4rem, 6vw, 4.4rem); line-height: 1.03; font-weight: 800;
+    letter-spacing: -0.035em; color: #fff; max-width: 15ch;
+  }
+  h1.hero-title .accent {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    background: linear-gradient(90deg, var(--mint), var(--lavender));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 1.12em; letter-spacing: -0.01em;
+  }
+  .hero-thesis {
+    font-size: clamp(1.05rem, 2vw, 1.4rem); color: rgba(255,255,255,0.82);
+    margin-top: 1.6rem; max-width: 44ch; line-height: 1.5; font-weight: 300;
+  }
+  .hero-thesis em { font-family: var(--font-serif); font-style: italic; color: var(--mint); font-weight: 400; font-size: 1.08em; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 2.2rem; }
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 7px; font-size: 0.74rem; font-weight: 600;
+    color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12); padding: 7px 13px; border-radius: 999px;
+  }
+  .hero-chip .g { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, var(--mint-deep), var(--lavender)); }
+  .scroll-hint { margin-top: 2.4rem; display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); font-weight: 700; }
+  .scroll-hint svg { width: 16px; height: 16px; animation: bob 2.2s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(4px);} }
+
+  /* ─── AGENTS ─── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 1.4rem; align-items: flex-start;
+    background: var(--warm); border: 1px solid var(--border); border-radius: 18px;
+    padding: 1.1rem 1.3rem; margin: 1.8rem 0 2rem;
+  }
+  .legend-block { display: flex; flex-direction: column; gap: 0.5rem; }
+  .legend-block h4 { font-size: 0.68rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .legend-items { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tier-chip, .wave-chip {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 700;
+    padding: 4px 9px; border-radius: 999px; white-space: nowrap; line-height: 1.2;
+  }
+  .tier-chip { background: rgba(166,167,245,0.16); color: #4b4cad; border: 1px solid rgba(166,167,245,0.4); }
+  .tier-chip .n { font-family: var(--font-mono); font-weight: 500; }
+  .tier-chip[data-t="4"] { background: rgba(242,183,102,0.18); color: #9a6a12; border-color: rgba(242,183,102,0.5); }
+  .wave-chip { background: rgba(167,232,217,0.24); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.35); }
+  .wave-chip .n { font-family: var(--font-mono); font-weight: 500; }
+
+  .agent-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.1rem; }
+  @media (max-width: 780px) { .agent-grid { grid-template-columns: 1fr; } }
+
+  .agent-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    box-shadow: var(--shadow-sm); overflow: hidden; transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+  }
+  .agent-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .agent-card.expanded { border-color: rgba(91,191,164,0.5); box-shadow: var(--shadow-mint); }
+  .agent-head {
+    width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+    display: flex; gap: 0.9rem; align-items: flex-start; padding: 1.3rem 1.3rem 1.1rem;
+    font-family: inherit;
+  }
+  .agent-icon {
+    flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+    display: grid; place-items: center; color: #fff;
+    background: linear-gradient(135deg, var(--mint-deep), var(--lavender));
+  }
+  .agent-icon svg { width: 22px; height: 22px; }
+  .agent-card:nth-child(3) .agent-icon { background: linear-gradient(135deg, var(--blue), var(--lavender)); }
+  .agent-card:nth-child(4) .agent-icon { background: linear-gradient(135deg, var(--mint-deep), var(--blue)); }
+  .agent-card:nth-child(5) .agent-icon { background: linear-gradient(135deg, var(--lavender), var(--blue)); }
+  .agent-card:nth-child(6) .agent-icon { background: linear-gradient(135deg, var(--amber), var(--mint-deep)); }
+  .agent-titles { flex: 1; min-width: 0; }
+  .agent-name { font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; color: var(--ink); }
+  .agent-role { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+  .agent-chevron { flex-shrink: 0; color: var(--muted-2); transition: transform 0.3s; margin-top: 4px; }
+  .agent-card.expanded .agent-chevron { transform: rotate(180deg); color: var(--mint-deep); }
+  .agent-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0 1.3rem 1.1rem; }
+  .agent-body {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+    border-top: 1px solid transparent;
+  }
+  .agent-card.expanded .agent-body { border-top-color: var(--border); }
+  .agent-body-inner { padding: 1.1rem 1.3rem 1.4rem; }
+  .agent-body p { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+  .agent-body h5 { font-size: 0.68rem; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--mint-text); margin: 1rem 0 0.5rem; }
+  .agent-body ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .agent-body li { font-size: 0.86rem; color: var(--ink); display: flex; gap: 0.55rem; align-items: flex-start; line-height: 1.5; }
+  .agent-body li::before {
+    content: ''; flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; margin-top: 8px;
+    background: linear-gradient(135deg, var(--mint-deep), var(--lavender));
+  }
+  .agent-note {
+    margin-top: 1rem; font-size: 0.8rem; color: var(--muted); background: var(--warm);
+    border: 1px solid var(--border); border-radius: 12px; padding: 0.7rem 0.9rem; line-height: 1.55;
+  }
+  .agent-note strong { color: var(--ink); }
+
+  /* ─── LOOP DIAGRAM ─── */
+  .loop-wrap { margin-top: 2rem; display: grid; grid-template-columns: 1.15fr 1fr; gap: 2rem; align-items: center; }
+  @media (max-width: 880px) { .loop-wrap { grid-template-columns: 1fr; } }
+  .loop-stage-panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    box-shadow: var(--shadow-sm); padding: 1.6rem; min-height: 260px;
+  }
+  .loop-diagram-scroll { overflow-x: auto; }
+  .loop-diagram { min-width: 460px; }
+  .loop-svg { width: 100%; height: auto; display: block; }
+  .loop-node { cursor: pointer; }
+  .loop-node .node-bg { transition: fill 0.25s, stroke 0.25s; }
+  .loop-node text { font-family: var(--font-sans); font-weight: 700; fill: var(--ink); pointer-events: none; }
+  .loop-node .node-sub { font-weight: 500; fill: var(--muted); }
+  .loop-node:focus { outline: none; }
+  .loop-node:focus-visible .node-bg { stroke: var(--mint-deep); stroke-width: 3; }
+  .loop-node.active .node-bg { fill: var(--ink); stroke: var(--mint-deep); }
+  .loop-node.active text { fill: #fff; }
+  .loop-node.active .node-sub { fill: var(--mint); }
+  .loop-arrow { fill: none; stroke: var(--lavender); stroke-width: 2.5; stroke-linecap: round; opacity: 0.7; }
+  .loop-arrow-head { fill: var(--lavender); }
+
+  .stage-num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--mint-text); font-weight: 500; letter-spacing: 1px; }
+  .stage-title { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; margin: 0.35rem 0 0.2rem; }
+  .stage-title .accent { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); font-size: 1.1em; }
+  .stage-agents { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.9rem; }
+  .stage-desc { font-size: 0.92rem; color: var(--ink); line-height: 1.6; }
+  .stage-desc + .stage-desc { margin-top: 0.7rem; color: var(--muted); font-size: 0.86rem; }
+  .stage-dots { display: flex; gap: 0.4rem; margin-top: 1.2rem; }
+  .stage-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; padding: 0; transition: background 0.2s, transform 0.2s; }
+  .stage-dot.on { background: linear-gradient(135deg, var(--mint-deep), var(--lavender)); transform: scale(1.25); }
+
+  /* ─── CONNECTS TO NOVA ─── */
+  .connect-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; margin-top: 2rem; }
+  @media (max-width: 820px) { .connect-grid { grid-template-columns: 1fr; } }
+  .connect-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+    padding: 1.4rem; box-shadow: var(--shadow-sm);
+  }
+  .connect-card .ic {
+    width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; margin-bottom: 0.9rem;
+    background: rgba(167,232,217,0.28); color: var(--mint-text);
+  }
+  .connect-card:nth-child(2) .ic { background: rgba(166,167,245,0.2); color: #5152b0; }
+  .connect-card:nth-child(3) .ic { background: rgba(125,188,253,0.2); color: #2f74c9; }
+  .connect-card h4 { font-size: 1rem; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 0.45rem; }
+  .connect-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .connect-card a.inline { color: var(--mint-text); font-weight: 700; text-decoration: none; border-bottom: 1px solid rgba(31,156,130,0.35); }
+  .connect-card a.inline:hover { border-bottom-color: var(--mint-text); }
+
+  .principle-banner {
+    margin-top: 2rem; background: var(--deep); color: #fff; border-radius: 22px;
+    padding: 2rem 2rem; position: relative; overflow: hidden;
+  }
+  .principle-banner .pb-aurora {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 40% 60% at 12% 20%, rgba(91,191,164,0.28) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 88% 80%, rgba(166,167,245,0.24) 0%, transparent 60%);
+  }
+  .principle-banner .pb-inner { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 1.6rem; align-items: center; justify-content: space-between; }
+  .principle-banner .pb-quote { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.25; max-width: 18ch; }
+  .principle-banner .pb-quote .hl { color: var(--mint); }
+  .pb-rules { display: flex; flex-direction: column; gap: 0.7rem; }
+  .pb-rule { display: flex; align-items: flex-start; gap: 0.7rem; font-size: 0.86rem; color: rgba(255,255,255,0.85); max-width: 34ch; }
+  .pb-rule .tag {
+    flex-shrink: 0; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 999px;
+    background: rgba(167,232,217,0.16); color: var(--mint); border: 1px solid rgba(167,232,217,0.28); margin-top: 1px;
+  }
+  .pb-rule.human .tag { background: rgba(242,183,102,0.16); color: var(--amber); border-color: rgba(242,183,102,0.3); }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--deep); color: rgba(255,255,255,0.72); padding: 3.5rem 2rem 2.5rem; margin-top: 3rem; }
+  .footer-grid { max-width: 1160px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 2rem; }
+  @media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.6rem; } }
+  @media (max-width: 460px) { .footer-grid { grid-template-columns: 1fr; } }
+  .foot-brand { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.9rem; }
+  .foot-brand .brand-name { color: #fff; font-size: 1.35rem; }
+  .foot-tag { font-size: 0.85rem; color: rgba(255,255,255,0.6); max-width: 40ch; line-height: 1.6; }
+  .foot-col h5 { font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 0.9rem; }
+  .foot-col a { display: block; font-size: 0.86rem; color: rgba(255,255,255,0.78); text-decoration: none; margin-bottom: 0.6rem; transition: color 0.2s; }
+  .foot-col a:hover { color: var(--mint); }
+  .foot-base {
+    max-width: 1160px; margin: 2.5rem auto 0; padding-top: 1.6rem;
+    border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 0.5rem;
+    font-size: 0.78rem; color: rgba(255,255,255,0.55);
+  }
+  .foot-base .tm { max-width: 900px; line-height: 1.6; }
+
+  /* ─── FADE ─── */
+  .fade-up { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.in { opacity: 1; transform: none; }
+
+  .skip-link {
+    position: absolute; left: -999px; top: 0; z-index: 200; background: var(--ink); color: #fff;
+    padding: 10px 16px; border-radius: 0 0 10px 0; font-weight: 700; font-size: 0.85rem;
+  }
+  .skip-link:focus { left: 0; }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--mint-deep); outline-offset: 3px; border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+    .fade-up { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<a href="#agents" class="skip-link">Skip to content</a>
+<div class="aurora"><div class="mint-glow"></div><div class="lav-glow"></div></div>
+
+<!-- NAV -->
+<nav aria-label="Section navigation">
+  <a class="brand" href="#hero" aria-label="Nova FT — home">
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="brand-n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+      <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#brand-n)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-name">Nova<span class="ft">FT</span></span>
+  </a>
+  <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" id="navToggle">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero" data-spy="hero">Overview</a></li>
+    <li><a href="#agents" data-spy="agents">The agents</a></li>
+    <li><a href="#how" data-spy="how">How it works</a></li>
+    <li><a href="#connect" data-spy="connect">Connects to Nova</a></li>
+    <li><a href="#footer" data-spy="footer">More</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-aurora"></div>
+  <div class="hero-inner">
+    <div class="wordmark fade-up">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="hero-n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A7E8D9"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+        <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#hero-n)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="wm-dot">.</span>
+    </div>
+    <div class="eyebrow on-dark fade-up"><span class="dot"></span>NOVA FT · STRATEGY &amp; MANAGEMENT</div>
+    <h1 class="hero-title fade-up">The company, run by <span class="accent">Strategy &amp; Management</span>.</h1>
+    <p class="hero-thesis fade-up">An AI-native function for <em>steering the AI-native company</em> — by numbers and narrative.</p>
+    <div class="hero-meta fade-up">
+      <span class="hero-chip"><span class="g"></span>6 specialist agents</span>
+      <span class="hero-chip"><span class="g"></span>Agents propose · humans approve</span>
+      <span class="hero-chip"><span class="g"></span>Money &amp; close stay human-only</span>
+    </div>
+    <div class="scroll-hint fade-up">
+      Scroll to explore
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- THE AGENTS -->
+<section id="agents">
+  <div class="kicker fade-up">The fleet</div>
+  <h2 class="section-title fade-up">Six agents that <span class="accent">steer the business</span>.</h2>
+  <p class="section-lead fade-up">Each agent owns a slice of running the company — from market strategy to the invoice. Open a card to see what it does, how far it is trusted to act, and when it gets built. Every action above &ldquo;explain&rdquo; is a proposal a human signs off.</p>
+
+  <!-- LEGEND -->
+  <div class="legend fade-up" role="group" aria-label="Chip legend">
+    <div class="legend-block">
+      <h4>Autonomy tier</h4>
+      <div class="legend-items">
+        <span class="tier-chip" data-t="0"><span class="n">0</span> Observe</span>
+        <span class="tier-chip" data-t="1"><span class="n">1</span> Explain</span>
+        <span class="tier-chip" data-t="2"><span class="n">2</span> Propose · human approves</span>
+        <span class="tier-chip" data-t="3"><span class="n">3</span> Act · allowlisted</span>
+        <span class="tier-chip" data-t="4"><span class="n">4</span> Human-only</span>
+      </div>
+    </div>
+    <div class="legend-block">
+      <h4>Build wave</h4>
+      <div class="legend-items">
+        <span class="wave-chip"><span class="n">1</span> Now</span>
+        <span class="wave-chip"><span class="n">2</span> Next</span>
+        <span class="wave-chip"><span class="n">3</span> Later</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="agent-grid">
+    <!-- 1 Strategy -->
+    <article class="agent-card fade-up">
+      <button class="agent-head" aria-expanded="false" aria-controls="ab-strategy">
+        <span class="agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.5" fill="currentColor"/></svg></span>
+        <span class="agent-titles">
+          <span class="agent-name">Strategy Agent</span>
+          <span class="agent-role">Market &amp; competitor analysis, positioning, scenarios</span>
+        </span>
+        <span class="agent-chevron" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="agent-chips">
+        <span class="tier-chip" data-t="1"><span class="n">Tier 1</span> · Explain</span>
+        <span class="wave-chip"><span class="n">Wave 3</span> · Later</span>
+      </div>
+      <div class="agent-body" id="ab-strategy" role="region">
+        <div class="agent-body-inner">
+          <p>Reads the market so leadership doesn't have to start from a blank page. It watches competitors, sizes opportunities and frames the strategic choices — always as analysis a human interprets, never as a decision it makes alone.</p>
+          <h5>What it does</h5>
+          <ul>
+            <li>Continuous market and competitor scans across Nova's regions</li>
+            <li>Positioning options and differentiators, with the evidence behind each</li>
+            <li>Scenario models — best / base / downside — for major bets</li>
+            <li>Briefs that turn signal into a shortlist of strategic choices</li>
+          </ul>
+          <div class="agent-note"><strong>Why tier 1.</strong> Strategy shapes direction for the whole fleet, so it stays at explain-only — it informs and frames, humans decide.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2 Planning / OKR -->
+    <article class="agent-card fade-up">
+      <button class="agent-head" aria-expanded="false" aria-controls="ab-okr">
+        <span class="agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+        <span class="agent-titles">
+          <span class="agent-name">Planning / OKR Agent</span>
+          <span class="agent-role">Strategy → OKRs, roadmap, resourcing</span>
+        </span>
+        <span class="agent-chevron" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="agent-chips">
+        <span class="tier-chip" data-t="2"><span class="n">Tier 2</span> · Propose</span>
+        <span class="wave-chip"><span class="n">Wave 3</span> · Later</span>
+      </div>
+      <div class="agent-body" id="ab-okr" role="region">
+        <div class="agent-body-inner">
+          <p>Turns the chosen strategy into a plan the fleet can execute: objectives, measurable key results, a roadmap and the resourcing to make it real. It drafts; leadership commits.</p>
+          <h5>What it does</h5>
+          <ul>
+            <li>Translates strategic choices into a coherent OKR tree</li>
+            <li>Sequences the roadmap and flags dependencies and conflicts</li>
+            <li>Proposes resourcing — where people and budget should go</li>
+            <li>Tracks progress against key results and surfaces drift early</li>
+          </ul>
+          <div class="agent-note"><strong>Why tier 2.</strong> It proposes OKRs, roadmaps and resourcing as drafts; a human approves before anything becomes the plan of record.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3 Board / Investor -->
+    <article class="agent-card fade-up">
+      <button class="agent-head" aria-expanded="false" aria-controls="ab-board">
+        <span class="agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M3 21h18"/><path d="M9 21v-6h6v6"/></svg></span>
+        <span class="agent-titles">
+          <span class="agent-name">Board / Investor Agent</span>
+          <span class="agent-role">Board packs, investor updates, data-room</span>
+        </span>
+        <span class="agent-chevron" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="agent-chips">
+        <span class="tier-chip" data-t="2"><span class="n">Tier 2</span> · Propose</span>
+        <span class="wave-chip"><span class="n">Wave 3</span> · Later</span>
+      </div>
+      <div class="agent-body" id="ab-board" role="region">
+        <div class="agent-body-inner">
+          <p>Keeps the board and investors current with one consistent, evidenced story — drawn from the same metrics the business runs on, so the narrative and the numbers never diverge.</p>
+          <h5>What it does</h5>
+          <ul>
+            <li>Assembles board packs from live BizOps metrics and finance data</li>
+            <li>Drafts monthly / quarterly investor updates in a consistent voice</li>
+            <li>Maintains an always-ready data-room for diligence</li>
+            <li>Answers investor questions with sourced, traceable figures</li>
+          </ul>
+          <div class="agent-note"><strong>Why tier 2.</strong> Every pack and update is prepared for a human owner to review, edit and sign before it leaves the building.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4 BizOps / Metrics -->
+    <article class="agent-card fade-up">
+      <button class="agent-head" aria-expanded="false" aria-controls="ab-bizops">
+        <span class="agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></span>
+        <span class="agent-titles">
+          <span class="agent-name">BizOps / Metrics Agent</span>
+          <span class="agent-role">The 3 headline metrics, unit economics, models</span>
+        </span>
+        <span class="agent-chevron" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="agent-chips">
+        <span class="tier-chip" data-t="1"><span class="n">Tier 1</span> · Explain</span>
+        <span class="wave-chip"><span class="n">Wave 2</span> · Next</span>
+      </div>
+      <div class="agent-body" id="ab-bizops" role="region">
+        <div class="agent-body-inner">
+          <p>The single source of truth for how the company is doing. It maintains the three headline metrics everyone steers by, keeps the unit economics honest, and runs the models the rest of the fleet reads from.</p>
+          <h5>What it does</h5>
+          <ul>
+            <li>Owns and publishes the 3 headline metrics — one shared scoreboard</li>
+            <li>Tracks unit economics: cost-to-serve, contribution, payback</li>
+            <li>Maintains the operating and growth models leadership plans against</li>
+            <li>Flags anomalies and explains the &ldquo;why&rdquo; behind every movement</li>
+          </ul>
+          <div class="agent-note"><strong>Why tier 1.</strong> Metrics must be trusted, not edited — it observes and explains only, so the numbers stay clean for every other agent.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5 Licence & Entitlement -->
+    <article class="agent-card fade-up">
+      <button class="agent-head" aria-expanded="false" aria-controls="ab-licence">
+        <span class="agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M7 14h5"/><circle cx="16.5" cy="14.5" r="1.5"/></svg></span>
+        <span class="agent-titles">
+          <span class="agent-name">Licence &amp; Entitlement Agent</span>
+          <span class="agent-role">Entitlements, 3rd-party licences, Nova IP, per-customer stacks</span>
+        </span>
+        <span class="agent-chevron" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="agent-chips">
+        <span class="tier-chip" data-t="2"><span class="n">Tier 1–2</span> · Explain / Propose</span>
+        <span class="wave-chip"><span class="n">Wave 2</span> · Next</span>
+      </div>
+      <div class="agent-body" id="ab-licence" role="region">
+        <div class="agent-body-inner">
+          <p>Knows exactly what each customer is entitled to and what each customer's stack is built from — Nova IP plus every third-party licence — so entitlements and billing always match reality.</p>
+          <h5>What it does</h5>
+          <ul>
+            <li>Maintains entitlements: what each customer can use, on what plan</li>
+            <li>Tracks third-party licences and their terms, limits and renewals</li>
+            <li>Registers Nova's own IP and where it is deployed</li>
+            <li>Builds a per-customer stack profile that feeds metering and billing</li>
+          </ul>
+          <div class="agent-note"><strong>Why tier 1–2.</strong> It explains the entitlement picture continuously, and proposes changes (new grants, licence true-ups) for a human to approve.</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6 Finance / Billing -->
+    <article class="agent-card fade-up">
+      <button class="agent-head" aria-expanded="false" aria-controls="ab-finance">
+        <span class="agent-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M2 10h3M19 10h3"/></svg></span>
+        <span class="agent-titles">
+          <span class="agent-name">Finance / Billing Agent</span>
+          <span class="agent-role">Invoicing, tx-usage metering, revenue recognition, cash-flow, R&amp;D-tax</span>
+        </span>
+        <span class="agent-chevron" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="agent-chips">
+        <span class="tier-chip" data-t="2"><span class="n">Tier 2</span> · Propose</span>
+        <span class="wave-chip"><span class="n">Wave 2</span> · Next</span>
+      </div>
+      <div class="agent-body" id="ab-finance" role="region">
+        <div class="agent-body-inner">
+          <p>Runs the money mechanics end to end — metering usage, drafting invoices, recognising revenue and forecasting cash — while the moments that actually move money or close the books stay firmly human-only.</p>
+          <h5>What it does</h5>
+          <ul>
+            <li>Meters transaction usage per customer from the stack profile</li>
+            <li>Drafts invoices, including pass-through of third-party costs</li>
+            <li>Prepares revenue recognition and cash-flow forecasts</li>
+            <li>Compiles R&amp;D-tax evidence from real engineering activity</li>
+          </ul>
+          <div class="agent-note"><strong>Tier 2, with a tier-4 line.</strong> It proposes invoices and journals for approval — but sending money and closing the books are <strong>human-only (tier 4)</strong>.</div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="kicker fade-up">The steering loop</div>
+  <h2 class="section-title fade-up">How it <span class="accent">works</span>.</h2>
+  <p class="section-lead fade-up">Strategy &amp; Management runs as a loop, not a hierarchy. Direction becomes plans, plans become metrics, metrics become the story told to boards and the money collected — and all of it feeds back into the next strategic call. Click a stage to follow it round.</p>
+
+  <div class="loop-wrap">
+    <div class="loop-diagram-scroll fade-up">
+      <div class="loop-diagram">
+        <svg class="loop-svg" viewBox="0 0 460 460" role="group" aria-label="The steering loop — five clickable stages">
+          <defs>
+            <marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path class="loop-arrow-head" d="M0 0 L8 4 L0 8 Z"/>
+            </marker>
+          </defs>
+          <!-- connecting arcs between nodes arranged on a pentagon -->
+          <path class="loop-arrow" marker-end="url(#ah)" d="M 262 78 A 170 170 0 0 1 405 232"/>
+          <path class="loop-arrow" marker-end="url(#ah)" d="M 396 288 A 170 170 0 0 1 292 402"/>
+          <path class="loop-arrow" marker-end="url(#ah)" d="M 232 405 A 170 170 0 0 1 84 330"/>
+          <path class="loop-arrow" marker-end="url(#ah)" d="M 62 292 A 170 170 0 0 1 118 108"/>
+
+          <!-- Stage 1: Strategy (top) -->
+          <g class="loop-node" data-stage="0" tabindex="0" role="button" aria-label="Stage 1: Strategy">
+            <rect class="node-bg" x="160" y="18" width="140" height="64" rx="16" fill="#FFFFFF" stroke="#E5E9EF" stroke-width="1.5"/>
+            <text x="230" y="46" text-anchor="middle" font-size="15">Strategy</text>
+            <text class="node-sub" x="230" y="65" text-anchor="middle" font-size="11">direction &amp; scenarios</text>
+          </g>
+          <!-- Stage 2: OKRs / Planning (right) -->
+          <g class="loop-node" data-stage="1" tabindex="0" role="button" aria-label="Stage 2: OKRs and Planning">
+            <rect class="node-bg" x="330" y="150" width="122" height="64" rx="16" fill="#FFFFFF" stroke="#E5E9EF" stroke-width="1.5"/>
+            <text x="391" y="178" text-anchor="middle" font-size="15">OKRs / Plan</text>
+            <text class="node-sub" x="391" y="197" text-anchor="middle" font-size="11">roadmap &amp; resourcing</text>
+          </g>
+          <!-- Stage 3: BizOps metrics (bottom-right) -->
+          <g class="loop-node" data-stage="2" tabindex="0" role="button" aria-label="Stage 3: BizOps metrics">
+            <rect class="node-bg" x="262" y="352" width="128" height="64" rx="16" fill="#FFFFFF" stroke="#E5E9EF" stroke-width="1.5"/>
+            <text x="326" y="380" text-anchor="middle" font-size="15">BizOps metrics</text>
+            <text class="node-sub" x="326" y="399" text-anchor="middle" font-size="11">3 headline numbers</text>
+          </g>
+          <!-- Stage 4: Board + Finance (bottom-left) -->
+          <g class="loop-node" data-stage="3" tabindex="0" role="button" aria-label="Stage 4: Board, Investor and Finance">
+            <rect class="node-bg" x="70" y="352" width="140" height="64" rx="16" fill="#FFFFFF" stroke="#E5E9EF" stroke-width="1.5"/>
+            <text x="140" y="380" text-anchor="middle" font-size="14">Board + Finance</text>
+            <text class="node-sub" x="140" y="399" text-anchor="middle" font-size="11">narrative &amp; money</text>
+          </g>
+          <!-- Stage 5: back to Strategy (left) -->
+          <g class="loop-node" data-stage="4" tabindex="0" role="button" aria-label="Stage 5: Learn and feed back to Strategy">
+            <rect class="node-bg" x="8" y="150" width="122" height="64" rx="16" fill="#FFFFFF" stroke="#E5E9EF" stroke-width="1.5"/>
+            <text x="69" y="178" text-anchor="middle" font-size="15">Feedback</text>
+            <text class="node-sub" x="69" y="197" text-anchor="middle" font-size="11">learn &amp; re-steer</text>
+          </g>
+          <!-- centre label -->
+          <text x="230" y="228" text-anchor="middle" font-family="Instrument Serif" font-style="italic" font-size="22" fill="#5BBFA4">the loop</text>
+          <text x="230" y="250" text-anchor="middle" font-size="11" fill="#9097A8">numbers &amp; narrative</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="loop-stage-panel fade-up" id="stagePanel" aria-live="polite">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- CONNECTS TO NOVA -->
+<section id="connect">
+  <div class="kicker fade-up">In the wider fleet</div>
+  <h2 class="section-title fade-up">How it connects to <span class="accent">Nova</span>.</h2>
+  <p class="section-lead fade-up">Strategy &amp; Management isn't a back office — it's the steering wheel. It sets the direction every other Nova agent executes, meters what each customer uses, and writes back into the platform's own systems of record.</p>
+
+  <div class="connect-grid">
+    <div class="connect-card fade-up">
+      <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></div>
+      <h4>Direction the fleet executes</h4>
+      <p>Strategy sets the destination; OKRs turn it into targets. Every other Nova department — engineering, product, support, compliance — pulls from the same plan, so the whole fleet rows in one direction.</p>
+    </div>
+    <div class="connect-card fade-up">
+      <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg></div>
+      <h4>Metering usage per customer</h4>
+      <p>The Licence &amp; Entitlement and Finance / Billing agents meter transaction usage against each customer's stack profile — turning what customers actually consume into invoices, revenue recognition and cash-flow.</p>
+    </div>
+    <div class="connect-card fade-up">
+      <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/><path d="M2 12h13l-3-3M15 12l-3 3"/></svg></div>
+      <h4>Feeds Nova Cortex</h4>
+      <p>Metrics, entitlements and billing write back into <a class="inline" href="cortex.html">Nova Cortex</a> — its CRM and Finance modules — so the same figures the board sees are the figures the platform runs on.</p>
+    </div>
+  </div>
+
+  <div class="principle-banner fade-up">
+    <div class="pb-aurora"></div>
+    <div class="pb-inner">
+      <div class="pb-quote">&ldquo;Agents <span class="hl">propose</span>, humans <span class="hl">approve</span>.&rdquo;</div>
+      <div class="pb-rules">
+        <div class="pb-rule"><span class="tag">TIERS 0–3</span><span>Agents observe, explain, propose and — where explicitly allowlisted — act. Every consequential step is a proposal a human owns.</span></div>
+        <div class="pb-rule human"><span class="tag">TIER 4 · HUMAN-ONLY</span><span>Moving money and closing the books are never automated. Those decisions stay with people, every time.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="foot-brand">
+        <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="foot-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+          <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#foot-g)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">Nova<span class="ft">FT</span></span>
+      </div>
+      <p class="foot-tag">Strategy &amp; Management — steering the AI-native company by numbers and narrative. Agents propose, humans approve.</p>
+    </div>
+    <div class="foot-col">
+      <h5>The fleet</h5>
+      <a href="index.html">Overview</a>
+      <a href="cortex.html">Nova Cortex hub</a>
+      <a href="engineering.html">Engineering</a>
+    </div>
+    <div class="foot-col">
+      <h5>More</h5>
+      <a href="support.html">Support</a>
+      <a href="compliance.html">Compliance</a>
+      <a href="#hero">Back to top</a>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span>© 2026 Nova Financial Technologies Limited. All rights reserved.</span>
+    <span class="tm">&ldquo;Nova&rdquo;, &ldquo;Nova FT&rdquo;, the Nova &ldquo;n.&rdquo; wordmark and the Nova logo are trade marks of Nova Financial Technologies Limited. The contents of this page — including all text, design, logos, illustrations and code — are protected by copyright and other intellectual property rights and may not be copied, reproduced or used without our prior written consent.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Mobile nav toggle ── */
+  var toggle = document.getElementById('navToggle');
+  var navLinks = document.getElementById('navLinks');
+  toggle.addEventListener('click', function () {
+    var open = navLinks.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  navLinks.addEventListener('click', function (e) {
+    if (e.target.tagName === 'A') {
+      navLinks.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  /* ── Scroll-spy ── */
+  var spyLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[data-spy]'));
+  var sections = spyLinks.map(function (a) { return document.getElementById(a.getAttribute('data-spy')); });
+  function setActive(id) {
+    spyLinks.forEach(function (a) {
+      a.classList.toggle('active', a.getAttribute('data-spy') === id);
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var visible = {};
+    var spyObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting ? en.intersectionRatio : 0; });
+      var best = null, bestR = 0;
+      sections.forEach(function (s) { if (s && visible[s.id] > bestR) { bestR = visible[s.id]; best = s.id; } });
+      if (best) setActive(best);
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 1] });
+    sections.forEach(function (s) { if (s) spyObs.observe(s); });
+  }
+
+  /* ── Fade-up reveal ── */
+  var fades = Array.prototype.slice.call(document.querySelectorAll('.fade-up'));
+  if (reduce || !('IntersectionObserver' in window)) {
+    fades.forEach(function (f) { f.classList.add('in'); });
+  } else {
+    var fadeObs = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('in'); obs.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    fades.forEach(function (f) { fadeObs.observe(f); });
+  }
+
+  /* ── Expandable agent cards ── */
+  Array.prototype.slice.call(document.querySelectorAll('.agent-head')).forEach(function (btn) {
+    var card = btn.closest('.agent-card');
+    var body = document.getElementById(btn.getAttribute('aria-controls'));
+    btn.addEventListener('click', function () {
+      var open = !card.classList.contains('expanded');
+      card.classList.toggle('expanded', open);
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      body.style.maxHeight = open ? body.scrollHeight + 'px' : '0px';
+    });
+  });
+  window.addEventListener('resize', function () {
+    Array.prototype.slice.call(document.querySelectorAll('.agent-card.expanded .agent-body')).forEach(function (b) {
+      b.style.maxHeight = b.scrollHeight + 'px';
+    });
+  });
+
+  /* ── Loop diagram ── */
+  var stages = [
+    {
+      num: 'STAGE 1 / 5', title: 'Strategy', accent: 'sets direction',
+      agents: 'Strategy Agent',
+      lead: 'Everything starts with a point of view on the market. The Strategy Agent scans competitors and scenarios and frames the choices; leadership picks the direction.',
+      sub: 'Output: a set of strategic bets, each backed by evidence — the destination the rest of the loop steers toward.'
+    },
+    {
+      num: 'STAGE 2 / 5', title: 'OKRs', accent: '& Planning',
+      agents: 'Planning / OKR Agent',
+      lead: 'Direction becomes a plan. The Planning / OKR Agent translates the chosen strategy into objectives, measurable key results, a roadmap and resourcing — proposed for a human to commit.',
+      sub: 'Output: an OKR tree and roadmap the whole Nova fleet can execute against.'
+    },
+    {
+      num: 'STAGE 3 / 5', title: 'BizOps', accent: 'metrics',
+      agents: 'BizOps / Metrics Agent',
+      lead: 'Execution shows up in the numbers. The BizOps / Metrics Agent maintains the three headline metrics and the unit economics, so progress against the plan is visible and trusted.',
+      sub: 'Output: one shared scoreboard — the single source of truth every other stage reads from.'
+    },
+    {
+      num: 'STAGE 4 / 5', title: 'Board + Investor',
+      accent: '& Finance',
+      agents: 'Board / Investor Agent · Finance / Billing Agent',
+      lead: 'The same metrics drive two outputs at once: the narrative to boards and investors, and the money collected from customers. Both draw on identical figures, so story and cash never diverge.',
+      sub: 'Money moves and books close are human-only (tier 4). Everything else is proposed for approval.'
+    },
+    {
+      num: 'STAGE 5 / 5', title: 'Feedback',
+      accent: '— re-steer',
+      agents: 'BizOps → Strategy',
+      lead: 'What actually happened — the results, the cash, the board’s reaction — feeds back into the next strategic call. The loop closes, and the company re-steers with fresh evidence.',
+      sub: 'Back to Strategy: numbers and narrative inform the next set of bets.'
+    }
+  ];
+
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.loop-node'));
+  var panel = document.getElementById('stagePanel');
+  var current = -1;
+
+  function renderStage(i) {
+    var s = stages[i];
+    var dots = stages.map(function (_, j) {
+      return '<button class="stage-dot ' + (j === i ? 'on' : '') + '" data-dot="' + j + '" aria-label="Go to stage ' + (j + 1) + '"></button>';
+    }).join('');
+    panel.innerHTML =
+      '<div class="stage-num">' + s.num + '</div>' +
+      '<div class="stage-title">' + s.title + ' <span class="accent">' + s.accent + '</span></div>' +
+      '<div class="stage-agents">' + s.agents + '</div>' +
+      '<p class="stage-desc">' + s.lead + '</p>' +
+      '<p class="stage-desc">' + s.sub + '</p>' +
+      '<div class="stage-dots">' + dots + '</div>';
+    nodes.forEach(function (n) {
+      var on = parseInt(n.getAttribute('data-stage'), 10) === i;
+      n.classList.toggle('active', on);
+    });
+    Array.prototype.slice.call(panel.querySelectorAll('.stage-dot')).forEach(function (d) {
+      d.addEventListener('click', function () { selectStage(parseInt(d.getAttribute('data-dot'), 10)); });
+    });
+    current = i;
+  }
+  function selectStage(i) { if (i !== current) renderStage(i); }
+
+  nodes.forEach(function (n) {
+    var i = parseInt(n.getAttribute('data-stage'), 10);
+    n.addEventListener('click', function () { selectStage(i); });
+    n.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectStage(i); }
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); var nx = (i + 1) % nodes.length; nodes[nx].focus(); selectStage(nx); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); var pv = (i - 1 + nodes.length) % nodes.length; nodes[pv].focus(); selectStage(pv); }
+    });
+  });
+
+  renderStage(0);
+})();
+</script>
+</body>
+</html>
