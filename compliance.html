@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova AI Security &amp; Compliance — How It Works</title>
+<meta name="description" content="How Nova FT keeps ISO 27001, SOC 2, ISO 42001, PCI-DSS, GDPR and more continuously met — GRC-as-code, baked into the engineering SDLC as pipeline gates and audited continuously by agents.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235BBFA4'/%3E%3Cstop offset='1' stop-color='%23A6A7F5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92' fill='none' stroke='url(%23g)' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F4F6FB;
+    --paper-warm: #FBF7F0;
+    --deep: #0B1126;
+    --ink: #0E1530;
+    --muted: #6B7388;
+    --muted-2: #9097A8;
+    --mint: #A7E8D9;
+    --mint-2: #7CD9C2;
+    --mint-deep: #5BBFA4;
+    --mint-text: #1f9c82;
+    --lavender: #A6A7F5;
+    --blue: #7DBCFD;
+    --amber: #F2B766;
+    --amber-text: #b5761a;
+    --fail: #D1242F;
+    --card: #FFFFFF;
+    --border: #E5E9EF;
+    --primary-50: #F0FBF8;
+
+    --shadow-sm: 0 2px 8px rgba(47,58,70,0.06);
+    --shadow-md: 0 12px 32px rgba(47,58,70,0.10);
+    --shadow-mint: 0 10px 22px rgba(91,191,164,0.28);
+    --shadow-mint-lg: 0 18px 38px rgba(91,191,164,0.32);
+
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+    --font-mono: 'Menlo', 'SF Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ─── AURORA ─── */
+  .aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--paper); }
+  .aurora .mint-glow {
+    position: absolute; width: 130%; height: 100%; top: -20%; left: -30%;
+    background: radial-gradient(ellipse 65% 50% at 22% 14%, rgba(167,232,217,0.45) 0%, transparent 65%);
+  }
+  .aurora .lav-glow {
+    position: absolute; width: 110%; height: 90%; top: -10%; right: -25%;
+    background: radial-gradient(ellipse 55% 45% at 80% 22%, rgba(166,167,245,0.30) 0%, transparent 65%);
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.05rem 2.5rem;
+    background: rgba(244, 246, 251, 0.75);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(229,233,239,0.5);
+  }
+  .brand { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; }
+  .brand-mark { width: 30px; height: 30px; flex-shrink: 0; }
+  .brand-name { font-family: var(--font-serif); font-style: italic; font-size: 1.55rem; color: var(--ink); letter-spacing: -0.01em; line-height: 1; }
+  .brand-name::after { content: '.'; color: var(--mint-deep); }
+  .nav-links { display: flex; gap: 1.4rem; list-style: none; align-items: center; }
+  .nav-links a { font-size: 0.78rem; font-weight: 500; color: var(--ink); text-decoration: none; transition: color 0.2s; position: relative; }
+  .nav-links a:hover { color: var(--mint-deep); }
+  .nav-links a.active { color: var(--mint-deep); }
+  .nav-links a.active::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+    background: linear-gradient(90deg, var(--mint-deep), var(--lavender)); border-radius: 2px;
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 6.5rem 2.5rem 4.5rem; max-width: 1200px; margin: 0 auto; }
+  .section-head { max-width: 760px; margin-bottom: 2.75rem; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+    background: rgba(167, 232, 217, 0.32); border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; color: var(--ink); margin-bottom: 1.3rem;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--mint-deep);
+    animation: pulse-dot 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.55; box-shadow: 0 0 0 0 rgba(91,191,164,0.6); }
+    50% { transform: scale(1.18); opacity: 1; box-shadow: 0 0 10px 2px rgba(91,191,164,0.5); }
+  }
+
+  .section-title {
+    font-size: clamp(1.9rem, 4.2vw, 2.9rem); line-height: 1.1; font-weight: 700;
+    letter-spacing: -0.02em; color: var(--ink); margin-bottom: 0.9rem;
+  }
+  .accent {
+    font-family: var(--font-serif); font-style: italic; font-weight: 400;
+    color: var(--mint-deep); font-size: 1.12em; letter-spacing: -0.005em;
+  }
+  .section-lead { font-size: 1rem; color: var(--muted); max-width: 660px; line-height: 1.7; }
+  .section-lead b { color: var(--ink); font-weight: 600; }
+  .mono { font-family: var(--font-mono); font-size: 0.9em; }
+
+  /* ─── HERO ─── */
+  #hero {
+    max-width: none; margin: 0; padding: 0;
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    background: var(--deep); position: relative; overflow: hidden;
+  }
+  .hero-bg { position: absolute; inset: 0; pointer-events: none; }
+  .hero-bg .g1 { position: absolute; width: 90%; height: 80%; top: -20%; left: -15%;
+    background: radial-gradient(ellipse 55% 50% at 30% 20%, rgba(125,188,253,0.22) 0%, transparent 62%); }
+  .hero-bg .g2 { position: absolute; width: 90%; height: 80%; top: -10%; right: -20%;
+    background: radial-gradient(ellipse 50% 45% at 75% 18%, rgba(166,167,245,0.24) 0%, transparent 62%); }
+  .hero-bg .g3 { position: absolute; width: 90%; height: 70%; bottom: -20%; left: 20%;
+    background: radial-gradient(ellipse 50% 50% at 50% 80%, rgba(91,191,164,0.16) 0%, transparent 62%); }
+  .hero-inner { max-width: 1200px; margin: 0 auto; padding: 8rem 2.5rem 5rem; position: relative; z-index: 1; width: 100%; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 13px;
+    background: rgba(125,188,253,0.14); border: 1px solid rgba(125,188,253,0.22); border-radius: 999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 1.8px; color: #CFE3FF; margin-bottom: 1.6rem;
+  }
+  .hero-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); animation: pulse-dot 2.6s ease-in-out infinite; }
+  .hero h1 {
+    font-size: clamp(2.7rem, 7vw, 5rem); line-height: 1.03; font-weight: 800;
+    letter-spacing: -0.03em; color: #F5F7FC; max-width: 18ch;
+  }
+  .hero h1 .accent { color: var(--mint); }
+  .hero h1 .dot { color: var(--mint-deep); }
+  .hero-sub { font-size: clamp(1.05rem, 2vw, 1.25rem); color: #A7AFC6; margin-top: 1.5rem; max-width: 62ch; line-height: 1.6; font-weight: 400; }
+  .hero-sub b { color: #E4E9F5; font-weight: 600; }
+  .hero-sub .it { font-family: var(--font-serif); font-style: italic; color: var(--mint); font-weight: 400; }
+  .hero-cta-row { display: flex; gap: 0.85rem; margin-top: 2.5rem; flex-wrap: wrap; align-items: center; }
+  .cta-pill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 54px; padding: 0 24px;
+    background: var(--mint-2); color: var(--ink); border-radius: 12px; font-family: inherit;
+    font-size: 15px; font-weight: 800; letter-spacing: 0.2px; border: none; cursor: pointer; text-decoration: none;
+    box-shadow: var(--shadow-mint); transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .cta-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-mint-lg); }
+  .cta-pill .chev { width: 18px; height: 18px; flex-shrink: 0; }
+  .cta-ghost {
+    display: inline-flex; align-items: center; gap: 8px; height: 54px; padding: 0 22px;
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.16); color: #D5DBEC;
+    font-size: 14px; font-weight: 600; text-decoration: none; transition: border-color 0.2s, color 0.2s;
+  }
+  .cta-ghost:hover { border-color: rgba(167,232,217,0.5); color: #fff; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 2.4rem; margin-top: 3.5rem; }
+  .hero-stat .v { font-size: 1.7rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+  .hero-stat .v .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint); }
+  .hero-stat .k { font-size: 0.72rem; color: #8A93AD; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+  /* ─── CARD ─── */
+  .card {
+    background: rgba(255,255,255,0.75); border: 1px solid var(--border); border-radius: 18px; padding: 1.6rem;
+    backdrop-filter: blur(12px); transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .card h3 .it, .split-card h3 .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint-deep); }
+
+  /* ─── STATUS PILLS ─── */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+    font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .pill .pdot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .pill.certified { background: var(--primary-50); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.3); }
+  .pill.certified .pdot { background: var(--mint-deep); }
+  .pill.progress { background: rgba(242,183,102,0.16); color: var(--amber-text); border: 1px solid rgba(242,183,102,0.35); }
+  .pill.progress .pdot { background: var(--amber); }
+  .pill.planned { background: rgba(107,115,136,0.1); color: var(--muted); border: 1px solid rgba(107,115,136,0.22); }
+  .pill.planned .pdot { background: var(--muted-2); }
+
+  /* ─── CERTIFICATION WALL ─── */
+  .cert-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem; }
+  .cert-fbtn {
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: #fff; color: var(--ink); font-family: inherit;
+    font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .cert-fbtn:hover { transform: translateY(-1px); border-color: var(--mint-deep); }
+  .cert-fbtn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .cert-wall {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;
+  }
+  .cert-badge {
+    position: relative; background: #fff; border: 1px solid var(--border); border-radius: 18px;
+    padding: 1.4rem 1.2rem 1.1rem; text-align: center; cursor: default;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; overflow: hidden;
+  }
+  .cert-badge:hover, .cert-badge:focus-within { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(91,191,164,0.4); }
+  .cert-badge.dim { opacity: 0.32; filter: grayscale(0.5); }
+  .cert-mark { width: 60px; height: 60px; margin: 0 auto 0.7rem; }
+  .cert-name { font-size: 0.92rem; font-weight: 700; color: var(--ink); line-height: 1.25; letter-spacing: -0.01em; }
+  .cert-domain { font-size: 0.72rem; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+  .cert-status { margin-top: 0.75rem; display: flex; justify-content: center; }
+  .cert-scope {
+    position: absolute; inset: 0; background: linear-gradient(160deg, rgba(14,21,48,0.97), rgba(26,35,72,0.97));
+    color: #E4E9F5; padding: 1.2rem 1.15rem; display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s; border-radius: 18px;
+  }
+  .cert-badge:hover .cert-scope, .cert-badge:focus-within .cert-scope { opacity: 1; }
+  .cert-scope .st { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mint); margin-bottom: 0.5rem; }
+  .cert-scope .sp { font-size: 0.78rem; line-height: 1.5; color: #C9D2E8; }
+
+  /* ─── TWO AGENTS ─── */
+  .agents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 860px) { .agents-grid { grid-template-columns: 1fr; } }
+  .agent-card { background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: 1.9rem; position: relative; overflow: hidden; transition: box-shadow 0.3s, border-color 0.3s, transform 0.3s; }
+  .agent-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(91,191,164,0.35); }
+  .agent-card.sec { border-top: 4px solid var(--blue); }
+  .agent-card.cmp { border-top: 4px solid var(--mint-deep); }
+  .agent-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+  .agent-mark { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 6px 14px rgba(91,191,164,0.22); }
+  .agent-card.sec .agent-mark { background: linear-gradient(135deg, var(--blue), var(--lavender)); }
+  .agent-card.cmp .agent-mark { background: linear-gradient(135deg, var(--mint), var(--mint-deep)); }
+  .agent-mark svg { width: 26px; height: 26px; }
+  .agent-name { font-size: 1.2rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .agent-role { font-family: var(--font-mono); font-size: 0.72rem; color: var(--mint-text); }
+  .agent-card.sec .agent-role { color: #2f76d6; }
+  .agent-desc { font-size: 0.92rem; color: var(--muted); line-height: 1.65; margin-bottom: 1rem; }
+  .agent-does { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem; }
+  .agent-does li { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.86rem; color: var(--ink); }
+  .agent-does li .m { flex-shrink: 0; color: var(--mint-deep); font-weight: 800; margin-top: 1px; }
+  .agent-card.sec .agent-does li .m { color: var(--blue); }
+  .autonomy { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .autonomy .albl { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-right: 0.3rem; }
+  .tier { width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 800; border: 1px solid var(--border); background: var(--paper); color: var(--muted-2); }
+  .tier.on { background: var(--primary-50); border-color: var(--mint-deep); color: var(--mint-text); }
+  .tier.t4 { background: rgba(14,21,48,0.06); border-color: rgba(14,21,48,0.2); color: var(--ink); }
+  .tier-sep { color: var(--muted-2); font-size: 0.8rem; }
+  .tier-note { font-size: 0.76rem; color: var(--muted); margin-left: 0.3rem; }
+  .tier-note b { color: var(--ink); }
+
+  /* ─── PIPELINE ─── */
+  .pipe { margin-top: 2.5rem; background: #fff; border: 1px solid var(--border); border-radius: 24px; padding: 2rem; box-shadow: var(--shadow-sm); }
+  .pipe-track { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding-bottom: 0.5rem; }
+  .pipe-step {
+    flex: 1; min-width: 96px; text-align: center; position: relative; padding: 0 0.35rem; cursor: default;
+    background: none; border: none; font-family: inherit;
+  }
+  .pipe-step.gate { cursor: pointer; }
+  .pipe-step:not(:last-child)::after {
+    content: ''; position: absolute; top: 24px; left: 50%; width: 100%; height: 2px; background: var(--border); z-index: 0;
+  }
+  .pipe-step.flowdone:not(:last-child)::after { background: linear-gradient(90deg, var(--mint-deep), var(--lavender)); }
+  .pipe-dot {
+    width: 48px; height: 48px; border-radius: 14px; margin: 0 auto 0.55rem; display: flex; align-items: center; justify-content: center;
+    background: var(--paper); border: 2px solid var(--border); color: var(--muted-2); position: relative; z-index: 1;
+    transition: all 0.28s; font-weight: 800;
+  }
+  .pipe-dot svg { width: 22px; height: 22px; }
+  .pipe-step.gate .pipe-dot { border-color: var(--mint-deep); color: var(--mint-deep); background: var(--primary-50); }
+  .pipe-step.gate.sel .pipe-dot { background: linear-gradient(135deg, var(--mint-deep), var(--lavender)); border-color: transparent; color: #fff; transform: scale(1.1); box-shadow: var(--shadow-mint); }
+  .pipe-step .lbl { font-size: 0.72rem; font-weight: 700; color: var(--ink); line-height: 1.2; letter-spacing: -0.01em; }
+  .pipe-step.gate .lbl { color: var(--mint-text); }
+  .pipe-step .sub { font-family: var(--font-mono); font-size: 0.54rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-2); margin-top: 3px; display: block; }
+  .gate-hint { display: inline-flex; align-items: center; gap: 6px; margin-top: 1.5rem; font-size: 0.78rem; color: var(--muted); background: var(--paper-warm); border: 1px dashed rgba(242,183,102,0.5); border-radius: 10px; padding: 0.5rem 0.85rem; }
+  .gate-hint b { color: var(--ink); }
+
+  .drill { margin-top: 1.75rem; display: grid; grid-template-columns: 1fr 1.35fr; gap: 1.25rem; align-items: start; }
+  @media (max-width: 860px) { .drill { grid-template-columns: 1fr; } }
+  .drill-col-h { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 0.75rem; }
+  .checks { display: flex; flex-direction: column; gap: 0.55rem; }
+  .check {
+    display: flex; align-items: center; gap: 0.7rem; width: 100%; text-align: left; padding: 0.85rem 1rem;
+    border: 1px solid var(--border); border-radius: 12px; background: #fff; cursor: pointer; font-family: inherit;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .check:hover { transform: translateY(-1px); border-color: rgba(91,191,164,0.5); }
+  .check.sel { border-color: var(--mint-deep); background: var(--primary-50); box-shadow: 0 0 0 1px rgba(91,191,164,0.35); }
+  .check .cico { width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--mint), var(--lavender)); color: var(--ink); }
+  .check .cico svg { width: 16px; height: 16px; }
+  .check .cname { flex: 1; min-width: 0; font-size: 0.85rem; font-weight: 600; color: var(--ink); }
+  .check .cnano { font-size: 0.7rem; color: var(--muted); font-weight: 400; display: block; }
+  .check .cchev { color: var(--muted-2); flex-shrink: 0; }
+
+  .drill-detail { background: linear-gradient(135deg, var(--ink) 0%, #1a2348 100%); color: #fff; border-radius: 20px; padding: 1.75rem; position: relative; overflow: hidden; min-height: 300px; }
+  .drill-detail::before { content: ''; position: absolute; top: -50px; right: -40px; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(167,232,217,0.2), transparent 70%); }
+  .dd-flow { display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); position: relative; margin-bottom: 1rem; flex-wrap: wrap; }
+  .dd-flow .arw { color: rgba(255,255,255,0.35); }
+  .dd-block { position: relative; margin-bottom: 1.15rem; }
+  .dd-block .k { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8A93AD; margin-bottom: 0.35rem; }
+  .dd-block .v { font-size: 0.95rem; color: #F5F7FC; font-weight: 600; line-height: 1.4; }
+  .dd-block .v.desc { font-weight: 400; color: rgba(255,255,255,0.8); font-size: 0.88rem; }
+  .dd-ctrl-id { display: inline-block; font-family: var(--font-mono); font-size: 0.72rem; color: var(--mint); background: rgba(91,191,164,0.14); border: 1px solid rgba(91,191,164,0.3); border-radius: 7px; padding: 3px 9px; }
+  .dd-evidence { font-family: var(--font-mono); font-size: 0.74rem; color: var(--amber); background: rgba(242,183,102,0.1); border: 1px solid rgba(242,183,102,0.25); border-radius: 8px; padding: 0.6rem 0.75rem; word-break: break-all; line-height: 1.5; }
+  .dd-evidence .tag { color: var(--mint-2); }
+  .dd-gateblock { position: relative; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; color: #CFE3FF; }
+  .dd-gateblock svg { color: var(--mint); flex-shrink: 0; }
+
+  /* ─── GRC TREE ─── */
+  .grc-wrap { margin-top: 2.5rem; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 1.5rem; align-items: start; }
+  @media (max-width: 960px) { .grc-wrap { grid-template-columns: 1fr; } }
+  .tree { background: var(--deep); border-radius: 20px; padding: 1.5rem 1.4rem; font-family: var(--font-mono); font-size: 0.82rem; box-shadow: var(--shadow-md); }
+  .tree-root { color: var(--mint-2); font-weight: 700; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+  .tree-root svg { width: 16px; height: 16px; }
+  .tnode {
+    display: flex; align-items: baseline; gap: 0.5rem; width: 100%; text-align: left;
+    padding: 0.5rem 0.6rem; border: none; background: none; cursor: pointer; font-family: inherit;
+    font-size: 0.82rem; color: #cdd6ea; border-radius: 8px; transition: background 0.2s, color 0.2s;
+  }
+  .tnode:hover { background: rgba(255,255,255,0.05); }
+  .tnode.sel { background: rgba(91,191,164,0.16); color: #fff; }
+  .tnode .branch { color: #4b567a; flex-shrink: 0; }
+  .tnode .fname { color: var(--mint-2); font-weight: 600; }
+  .tnode.sel .fname { color: var(--mint); }
+  .tnode .fdesc { color: #7f89a6; font-weight: 400; font-family: var(--font-sans); font-size: 0.74rem; }
+  .grc-detail { display: flex; flex-direction: column; gap: 1rem; }
+  .ctrl-card, .evi-card { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 1.4rem 1.5rem; }
+  .cc-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .cc-id { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 700; color: var(--ink); }
+  .cc-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem 1.1rem; }
+  .cc-grid dt { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); padding-top: 2px; }
+  .cc-grid dd { font-size: 0.86rem; color: var(--ink); line-height: 1.5; }
+  .cc-grid dd .owner { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.72rem; background: var(--primary-50); color: var(--mint-text); border: 1px solid rgba(91,191,164,0.28); border-radius: 999px; padding: 2px 9px; }
+  .evi-card { background: var(--deep); border-color: transparent; }
+  .evi-card .eh { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8A93AD; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.4rem; }
+  .evi-card .eh .dotb { width: 6px; height: 6px; border-radius: 50%; background: var(--mint-deep); }
+  .evi-body { font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.7; color: #cdd6ea; overflow-x: auto; }
+  .evi-body .key { color: var(--blue); }
+  .evi-body .str { color: var(--amber); }
+  .evi-body .ok { color: var(--mint-2); }
+
+  /* ─── TRACKER TABLE ─── */
+  .tracker { margin-top: 2.5rem; }
+  .readiness { background: linear-gradient(135deg, var(--ink) 0%, #1a2348 100%); border-radius: 22px; padding: 1.75rem 2rem; color: #fff; margin-bottom: 1.75rem; position: relative; overflow: hidden; }
+  .readiness::before { content: ''; position: absolute; top: -60px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(167,232,217,0.22), transparent 70%); }
+  .rd-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; position: relative; flex-wrap: wrap; }
+  .rd-top .rl { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: #8A93AD; }
+  .rd-top .rv { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; line-height: 1; }
+  .rd-top .rv .it { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--mint); }
+  .rd-legend { display: flex; gap: 1rem; font-size: 0.7rem; color: #A7AFC6; flex-wrap: wrap; }
+  .rd-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .rd-legend i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+  .meter { height: 16px; border-radius: 8px; background: rgba(255,255,255,0.08); overflow: hidden; display: flex; position: relative; }
+  .meter .seg { height: 100%; transition: width 0.6s ease; }
+  .meter .seg.certified { background: linear-gradient(90deg, var(--mint-deep), var(--mint-2)); }
+  .meter .seg.progress { background: linear-gradient(90deg, var(--amber), #f5c98a); }
+  .meter .seg.planned { background: rgba(255,255,255,0.14); }
+
+  .tracker-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; align-items: center; }
+  .tf-lbl { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-right: 0.3rem; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 18px; background: #fff; }
+  table.trk { width: 100%; border-collapse: collapse; min-width: 720px; }
+  table.trk th { text-align: left; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border); background: var(--paper); }
+  table.trk td { padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--border); font-size: 0.86rem; color: var(--ink); vertical-align: middle; }
+  table.trk tr:last-child td { border-bottom: none; }
+  table.trk tbody tr { transition: background 0.15s; }
+  table.trk tbody tr:hover { background: var(--primary-50); }
+  table.trk .std { font-weight: 700; }
+  table.trk .std small { display: block; font-weight: 400; color: var(--muted); font-size: 0.74rem; }
+  table.trk .owner-cell { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); }
+  table.trk .evi-cell { font-family: var(--font-mono); font-size: 0.76rem; color: var(--mint-text); }
+  .trk-empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 0.88rem; }
+
+  /* ─── AUDIT LOOP ─── */
+  .loop-wrap { margin-top: 2.5rem; display: grid; grid-template-columns: 1.05fr 1fr; gap: 1.75rem; align-items: center; }
+  @media (max-width: 900px) { .loop-wrap { grid-template-columns: 1fr; } }
+  .loop-svg-box { background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: 1.5rem; box-shadow: var(--shadow-sm); }
+  .loop-svg { width: 100%; height: auto; display: block; }
+  .loop-node-hit { cursor: pointer; }
+  .loop-panel { }
+  .loop-steps { display: flex; flex-direction: column; gap: 0.6rem; }
+  .loop-step {
+    display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.9rem 1.1rem; border: 1px solid var(--border);
+    border-radius: 14px; background: #fff; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s; width: 100%; text-align: left; font-family: inherit;
+  }
+  .loop-step:hover { transform: translateX(3px); border-color: rgba(91,191,164,0.5); }
+  .loop-step.sel { border-color: var(--mint-deep); background: var(--primary-50); box-shadow: 0 0 0 1px rgba(91,191,164,0.3); }
+  .loop-step .ln { width: 28px; height: 28px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; background: var(--paper); border: 1.5px solid var(--border); color: var(--muted-2); }
+  .loop-step.sel .ln { background: linear-gradient(135deg, var(--mint-deep), var(--lavender)); border-color: transparent; color: #fff; }
+  .loop-step .lt { font-size: 0.92rem; font-weight: 700; color: var(--ink); }
+  .loop-step .ld { font-size: 0.8rem; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+  .loop-step .lt .kanban { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.04em; text-transform: uppercase; background: rgba(166,167,245,0.16); color: #5a5bd6; border: 1px solid rgba(166,167,245,0.32); border-radius: 999px; padding: 2px 8px; margin-left: 0.5rem; vertical-align: middle; }
+
+  /* ─── PULL QUOTE ─── */
+  .pull { margin-top: 3rem; text-align: center; }
+  .pull .q { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.5rem, 3.5vw, 2.3rem); line-height: 1.3; color: var(--ink); max-width: 26ch; margin: 0 auto; display: block; }
+  .pull .q b { color: var(--mint-deep); font-style: italic; font-weight: 400; }
+
+  /* ─── FOOTER ─── */
+  footer { border-top: 1px solid var(--border); background: #fff; padding: 3rem 2.5rem 2rem; margin-top: 3rem; }
+  .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2.5rem; }
+  @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
+  .foot-brand { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.85rem; }
+  .foot-tag { font-size: 0.84rem; color: var(--muted); max-width: 340px; line-height: 1.6; }
+  .foot-col h5 { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink); margin-bottom: 0.85rem; }
+  .foot-col a { display: block; font-size: 0.84rem; color: var(--muted); text-decoration: none; padding: 0.28rem 0; transition: color 0.2s; cursor: pointer; }
+  .foot-col a:hover { color: var(--mint-deep); }
+  .foot-base { max-width: 1200px; margin: 2.25rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
+  .foot-base .line { font-size: 0.74rem; color: var(--muted-2); font-family: var(--font-mono); letter-spacing: 0.05em; }
+  .foot-base .tm { font-size: 0.78rem; color: var(--muted); max-width: 880px; line-height: 1.6; }
+
+  /* ─── FADE-UP ─── */
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+    .eyebrow .dot, .hero-eyebrow .dot { animation: none !important; }
+    .meter .seg { transition: none; }
+  }
+
+  :focus-visible { outline: 2px solid var(--mint-deep); outline-offset: 3px; border-radius: 6px; }
+
+  @media (max-width: 768px) {
+    nav { padding: 0.9rem 1.3rem; }
+    .nav-links { gap: 0.85rem; }
+    .nav-links li:nth-child(n+5) { display: none; }
+    section { padding: 5.5rem 1.3rem 3.5rem; }
+    .hero-inner { padding: 7rem 1.3rem 4rem; }
+    .pipe, .readiness { padding: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora"><div class="mint-glow"></div><div class="lav-glow"></div></div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#hero" class="brand" aria-label="Nova — home">
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs><linearGradient id="brand-n" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+      <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#brand-n)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand-name">Nova</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#certs" data-nav="certs">Certifications</a></li>
+    <li><a href="#agents" data-nav="agents">The agents</a></li>
+    <li><a href="#pipeline" data-nav="pipeline">In the pipeline</a></li>
+    <li><a href="#grc" data-nav="grc">GRC-as-code</a></li>
+    <li><a href="#tracker" data-nav="tracker">Tracker</a></li>
+    <li><a href="#loop" data-nav="loop">Audit loop</a></li>
+  </ul>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-bg"><div class="g1"></div><div class="g2"></div><div class="g3"></div></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow"><span class="dot"></span>AI SECURITY &amp; COMPLIANCE · GRC-AS-CODE</div>
+    <h1>Compliance, <span class="accent">baked in</span><span class="dot">.</span></h1>
+    <p class="hero-sub">For a bank, the certification set <span class="it">is the licence to sell</span>. So Nova FT doesn't bolt compliance on at audit time — it runs <b>GRC-as-code</b>: controls, evidence, policies and audits live in the <span class="mono">nova-compliance</span> repo and are enforced as <b>gates in the engineering SDLC</b>. Every change is scanned, mapped to controls, and can't ship until it passes — evidence captured automatically, audited continuously by agents.</p>
+    <div class="hero-cta-row">
+      <a href="#pipeline" class="cta-pill">See controls in the pipeline
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </a>
+      <a href="#certs" class="cta-ghost">View the certification wall</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="v">11+ <span class="it">standards</span></div><div class="k">ISO · SOC 2 · PCI · GDPR</div></div>
+      <div class="hero-stat"><div class="v">2 <span class="it">agents</span></div><div class="k">Security + Compliance</div></div>
+      <div class="hero-stat"><div class="v">every <span class="it">PR</span></div><div class="k">a compliance gate</div></div>
+      <div class="hero-stat"><div class="v">0→3 / 4</div><div class="k">agent autonomy · human attests</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 2. CERTIFICATION WALL ─── -->
+<section id="certs">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE CERTIFICATION WALL</div>
+    <h2 class="section-title">The standards Nova <span class="accent">keeps green</span>.</h2>
+    <p class="section-lead">These are not aspirations on a slide — they are a <b>published promise the platform must continuously keep</b>. Hover a badge for its scope. The platform layer is certified once and <b>inherited by every customer bank</b>; each bank adds only a local-regulator overlay.</p>
+  </div>
+
+  <div class="cert-filters fade-up" id="cert-filters" role="group" aria-label="Filter certifications by status">
+    <button class="cert-fbtn on" data-cf="all">All</button>
+    <button class="cert-fbtn" data-cf="certified"><span class="pdot" style="width:7px;height:7px;border-radius:50%;background:var(--mint-deep);display:inline-block"></span>Certified / native</button>
+    <button class="cert-fbtn" data-cf="progress"><span class="pdot" style="width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block"></span>In progress</button>
+    <button class="cert-fbtn" data-cf="planned"><span class="pdot" style="width:7px;height:7px;border-radius:50%;background:var(--muted-2);display:inline-block"></span>Planned</button>
+  </div>
+
+  <div class="cert-wall fade-up" id="cert-wall"></div>
+</section>
+
+<!-- ─── 3. THE TWO AGENTS ─── -->
+<section id="agents">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE DEPARTMENT · TWO AGENTS</div>
+    <h2 class="section-title">A <span class="accent">Security</span> agent and a <span class="accent">Compliance</span> agent.</h2>
+    <p class="section-lead">The AI Security &amp; Compliance function runs on two agents on the same earn-trust autonomy model as the rest of the fleet — <b>tiers 0–3</b> autonomous or human-approved. The one thing neither does autonomously: <b>attest</b> a certification. That is tier 4 — a named human signs, always. It is itself an ISO 42001 human-oversight requirement.</p>
+  </div>
+
+  <div class="agents-grid fade-up">
+    <div class="agent-card sec">
+      <div class="agent-top">
+        <div class="agent-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <div>
+          <div class="agent-name">Security agent</div>
+          <div class="agent-role">nova-agents/fleets/operations/security</div>
+        </div>
+      </div>
+      <p class="agent-desc">The platform's watchdog on the wire and in the code. It scans every change and every deploy for weakness, and keeps a live picture of the threat surface.</p>
+      <ul class="agent-does">
+        <li><span class="m">›</span><span><b>SAST, secret &amp; dependency scanning</b> — CodeQL, push protection, Dependabot / dependency review.</span></li>
+        <li><span class="m">›</span><span><b>Threat monitoring</b> — continuous detection across the running platform.</span></li>
+        <li><span class="m">›</span><span><b>Pen-test checklist</b> — seeded from the ATIB security spec, run each release.</span></li>
+      </ul>
+      <div class="autonomy">
+        <span class="albl">Autonomy</span>
+        <span class="tier on">0</span><span class="tier-sep">–</span><span class="tier on">3</span>
+        <span class="tier-note">scan &amp; report autonomously · <b>propose fixes, human approves</b></span>
+      </div>
+    </div>
+
+    <div class="agent-card cmp">
+      <div class="agent-top">
+        <div class="agent-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div>
+          <div class="agent-name">Compliance agent</div>
+          <div class="agent-role">nova-agents/fleets/operations/compliance</div>
+        </div>
+      </div>
+      <p class="agent-desc">The regulatory reviewer sitting beside the code reviewer. Its single job: keep every control in every framework <b>green, continuously, with audit-ready evidence</b>.</p>
+      <ul class="agent-does">
+        <li><span class="m">›</span><span><b>Continuous audit</b> vs ISO 27001 / SOC 2 / 42001 / PCI — daily sweep, not a yearly check.</span></li>
+        <li><span class="m">›</span><span><b>PR-gate</b> — blocks any change that would turn a control red, before it ships.</span></li>
+        <li><span class="m">›</span><span><b>Evidence collection</b> &amp; the live <b>certification tracker</b> — audit pack in minutes, not weeks.</span></li>
+      </ul>
+      <div class="autonomy">
+        <span class="albl">Autonomy</span>
+        <span class="tier on">0</span><span class="tier-sep">–</span><span class="tier on">3</span><span class="tier-sep">·</span><span class="tier t4">4</span>
+        <span class="tier-note">audits &amp; gates autonomously · <b>a human attests (tier 4), never the agent</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 4. CONTROLS IN THE PIPELINE ─── -->
+<section id="pipeline">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE KEY IDEA · CONTROLS IN THE PIPELINE</div>
+    <h2 class="section-title">Compliance is a <span class="accent">gate</span>, not an afterthought.</h2>
+    <p class="section-lead">Every feature walks the same SDLC. Two stages — <b>Security</b> and <b>Compliance</b> — are where controls are enforced. Each automated check maps to a control and <b>auto-produces evidence</b>. A PR can't merge, and a change can't ship, until its controls pass. Click a gate, then a check, to trace <b>check → control → evidence</b>.</p>
+  </div>
+
+  <div class="pipe fade-up">
+    <div class="pipe-track" id="pipe-track"></div>
+    <div class="gate-hint">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>The <b>Security</b> and <b>Compliance</b> gates are highlighted &amp; clickable — a feature can't pass them until its controls are green.</span>
+    </div>
+
+    <div class="drill">
+      <div>
+        <div class="drill-col-h" id="drill-checks-h">Automated checks</div>
+        <div class="checks" id="checks"></div>
+      </div>
+      <div class="drill-detail" id="drill-detail" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 5. GRC-AS-CODE ─── -->
+<section id="grc">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>GRC-AS-CODE · THE REPO</div>
+    <h2 class="section-title">Governance, risk &amp; compliance — <span class="accent">as code</span>.</h2>
+    <p class="section-lead">Everything the agents enforce lives in one version-controlled repo, <span class="mono">nova-compliance</span>. Controls are files. Evidence is auto-collected artefacts. Policies, audit runs and the live certification tracker sit beside them. Click a folder to inspect it.</p>
+  </div>
+
+  <div class="grc-wrap fade-up">
+    <div class="tree" id="grc-tree">
+      <div class="tree-root">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        nova-compliance/
+      </div>
+      <div id="tree-nodes"></div>
+    </div>
+    <div class="grc-detail" id="grc-detail"></div>
+  </div>
+</section>
+
+<!-- ─── 6. CERTIFICATION TRACKER ─── -->
+<section id="tracker">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE LIVE CERTIFICATION TRACKER</div>
+    <h2 class="section-title">Every standard, <span class="accent">status</span> &amp; owner — live.</h2>
+    <p class="section-lead">The tracker in <span class="mono">certifications/</span> is the single source of truth: standard → status → target → owner → last evidence. It is derived from the Nova-standard control set, and <b>each customer instance tracks its own copy</b>. Filter by status; watch the readiness meter respond.</p>
+  </div>
+
+  <div class="tracker fade-up">
+    <div class="readiness">
+      <div class="rd-top">
+        <div>
+          <div class="rl">Platform certification readiness</div>
+          <div class="rv"><span id="rd-pct">0</span><span class="it">%</span></div>
+        </div>
+        <div class="rd-legend">
+          <span><i style="background:var(--mint-deep)"></i>Certified / native</span>
+          <span><i style="background:var(--amber)"></i>In progress</span>
+          <span><i style="background:rgba(255,255,255,0.2)"></i>Planned</span>
+        </div>
+      </div>
+      <div class="meter" role="img" aria-label="Certification readiness meter">
+        <div class="seg certified" id="seg-cert" style="width:0"></div>
+        <div class="seg progress" id="seg-prog" style="width:0"></div>
+        <div class="seg planned" id="seg-plan" style="width:0"></div>
+      </div>
+    </div>
+
+    <div class="tracker-filters" id="trk-filters" role="group" aria-label="Filter tracker by status">
+      <span class="tf-lbl">Filter</span>
+      <button class="cert-fbtn on" data-tf="all">All standards</button>
+      <button class="cert-fbtn" data-tf="certified">Certified / native</button>
+      <button class="cert-fbtn" data-tf="progress">In progress</button>
+      <button class="cert-fbtn" data-tf="planned">Planned</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="trk">
+        <thead>
+          <tr><th>Standard</th><th>Status</th><th>Target</th><th>Owner</th><th>Last evidence</th></tr>
+        </thead>
+        <tbody id="trk-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 7. CONTINUOUS AUDIT LOOP ─── -->
+<section id="loop">
+  <div class="section-head fade-up">
+    <div class="eyebrow"><span class="dot"></span>THE CONTINUOUS AUDIT LOOP</div>
+    <h2 class="section-title">It never stops <span class="accent">watching</span>.</h2>
+    <p class="section-lead">Controls drift the moment code ships — a new secret, an over-broad role, an unencrypted field. A quarterly human check can't keep a fast-moving AI-built platform green. So the agents run a loop: <b>scan → map to controls → collect evidence → audit → flag gaps → raise issues on the Kanban</b> — closing straight back into the engineering SDLC. Click a step.</p>
+  </div>
+
+  <div class="loop-wrap fade-up">
+    <div class="loop-svg-box">
+      <svg class="loop-svg" viewBox="0 0 340 340" role="img" aria-label="Continuous audit loop diagram" id="loop-svg">
+        <defs>
+          <linearGradient id="loopgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient>
+          <marker id="looparrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#A6A7F5"/></marker>
+        </defs>
+        <circle cx="170" cy="170" r="118" fill="none" stroke="url(#loopgrad)" stroke-width="2" stroke-dasharray="5 7" opacity="0.6" marker-end="url(#looparrow)" transform="rotate(-90 170 170)"/>
+        <circle cx="170" cy="170" r="66" fill="rgba(91,191,164,0.06)"/>
+        <text x="170" y="163" text-anchor="middle" font-family="'Instrument Serif',serif" font-style="italic" font-size="18" fill="#5BBFA4">continuous</text>
+        <text x="170" y="185" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" letter-spacing="1" fill="#6B7388">NEVER A YEARLY CHECK</text>
+        <g id="loop-nodes"></g>
+      </svg>
+    </div>
+    <div class="loop-panel">
+      <div class="loop-steps" id="loop-steps"></div>
+    </div>
+  </div>
+
+  <div class="pull fade-up"><span class="q">Compliance as code, enforced by the pipeline — <b>audited continuously.</b></span></div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="foot-brand">
+        <svg width="26" height="26" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="foot-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>
+          <path d="M 22 78 L 22 38 Q 22 22 38 22 Q 54 22 54 38 L 54 78 Q 54 92 68 92" fill="none" stroke="url(#foot-g)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name" style="font-size: 1.35rem;">Nova</span>
+      </div>
+      <p class="foot-tag">Nova FT. An AI-native UK FinTech building core banking platforms for banks — where compliance is code, enforced by the pipeline and audited continuously.</p>
+    </div>
+    <div class="foot-col">
+      <h5>On this page</h5>
+      <a href="#certs">Certification wall</a>
+      <a href="#agents">The two agents</a>
+      <a href="#pipeline">Controls in the pipeline</a>
+      <a href="#grc">GRC-as-code</a>
+    </div>
+    <div class="foot-col">
+      <h5>More</h5>
+      <a href="#tracker">Certification tracker</a>
+      <a href="#loop">Continuous audit loop</a>
+      <a href="engineering.html">Engineering</a>
+      <a href="support.html">Support</a>
+      <a href="index.html">Home</a>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span class="line">© 2026 Nova Financial Technologies Limited. All rights reserved.</span>
+    <span class="line">Registered in England &amp; Wales · Company no. 17253785</span>
+    <span class="tm">"Nova", "Nova FT", the Nova "n." wordmark and the Nova logo are trade marks of Nova Financial Technologies Limited. The contents of this page — including all text, design, logos, illustrations and code — are protected by copyright and other intellectual property rights and may not be copied, reproduced or used without our prior written consent.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var STATUS_LABEL = { certified: "Certified / native", progress: "In progress", planned: "Planned" };
+
+  /* ═══════════ CERT BADGE SVG ═══════════ */
+  // shape: "shield" or "circle"; label short text placed inside the mark
+  function badgeSVG(shape, label, gid) {
+    var grad = '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5BBFA4"/><stop offset="1" stop-color="#A6A7F5"/></linearGradient></defs>';
+    var inner = '<text x="50" y="55" text-anchor="middle" dominant-baseline="middle" font-family="Inter,sans-serif" font-weight="800" font-size="' + (label.length > 4 ? 20 : 26) + '" fill="#fff">' + label + '</text>';
+    if (shape === "circle") {
+      return '<svg class="cert-mark" viewBox="0 0 100 100" aria-hidden="true">' + grad +
+        '<circle cx="50" cy="50" r="42" fill="url(#' + gid + ')"/>' +
+        '<circle cx="50" cy="50" r="42" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3 4" opacity="0.5"/>' +
+        inner + '</svg>';
+    }
+    // shield
+    return '<svg class="cert-mark" viewBox="0 0 100 100" aria-hidden="true">' + grad +
+      '<path d="M50 8 L86 22 V50 C86 74 68 88 50 94 C32 88 14 74 14 50 V22 Z" fill="url(#' + gid + ')"/>' +
+      '<path d="M50 8 L86 22 V50 C86 74 68 88 50 94 C32 88 14 74 14 50 V22 Z" fill="none" stroke="#fff" stroke-width="2" opacity="0.35"/>' +
+      inner + '</svg>';
+  }
+
+  /* ═══════════ DATA: CERTIFICATIONS ═══════════ */
+  var CERTS = [
+    { name: "ISO 27001", domain: "Information Security", shape: "shield", mark: "27k", status: "progress",
+      scope: "ISMS controls — risk register, access, cryptography, operations security. The gate that unlocks enterprise deals." },
+    { name: "SOC 2 Type II", domain: "Trust Services", shape: "circle", mark: "SOC", status: "progress",
+      scope: "Security, Availability, Confidentiality, Processing Integrity & Privacy — proven effective over a period, not a point in time." },
+    { name: "ISO 42001", domain: "AI Management", shape: "shield", mark: "42k", status: "progress",
+      scope: "AI Management System — governance of Nova's OWN AI agents: logged, attributable, human-gated. The recursive control." },
+    { name: "PCI-DSS v4.0", domain: "Card Data Security", shape: "shield", mark: "PCI", status: "planned",
+      scope: "Cardholder data flows, network segmentation, key management. No card PAN ever written to logs." },
+    { name: "UK-GDPR", domain: "Data Protection", shape: "circle", mark: "GDPR", status: "certified",
+      scope: "DSAR, consent, retention, PII handling — native to the platform architecture; must never regress." },
+    { name: "ISO 27017", domain: "Cloud Security", shape: "shield", mark: "27017", status: "planned",
+      scope: "Cloud-specific security controls — Azure configuration, tenant isolation, shared-responsibility boundaries." },
+    { name: "ISO 27018", domain: "Cloud PII", shape: "shield", mark: "27018", status: "planned",
+      scope: "Protection of personally identifiable information processed in the public cloud." },
+    { name: "NIST CSF 2.0", domain: "Cyber Framework", shape: "circle", mark: "NIST", status: "certified",
+      scope: "Govern, Identify, Protect, Detect, Respond, Recover — the backbone the control catalogue maps onto." },
+    { name: "Cyber Essentials +", domain: "UK NCSC Baseline", shape: "shield", mark: "CE+", status: "progress",
+      scope: "UK NCSC hands-on-verified baseline — firewalls, secure config, access control, malware, patching." },
+    { name: "ISO 20022", domain: "Financial Messaging", shape: "circle", mark: "20022", status: "certified",
+      scope: "The global standard for financial messaging — native to the payments core." },
+    { name: "Open Banking", domain: "PSD2 APIs", shape: "circle", mark: "OB", status: "progress",
+      scope: "PSD2 open-banking APIs — standardised, consented account & payment access." },
+    { name: "PSD2 SCA", domain: "Strong Customer Auth", shape: "shield", mark: "SCA", status: "progress",
+      scope: "Strong Customer Authentication on every payment path — two-factor, dynamic linking." }
+  ];
+
+  var wall = document.getElementById("cert-wall");
+  CERTS.forEach(function (c, i) {
+    var el = document.createElement("div");
+    el.className = "cert-badge";
+    el.setAttribute("tabindex", "0");
+    el.setAttribute("data-status", c.status);
+    el.innerHTML =
+      badgeSVG(c.shape, c.mark, "cg" + i) +
+      '<div class="cert-name">' + c.name + '</div>' +
+      '<div class="cert-domain">' + c.domain + '</div>' +
+      '<div class="cert-status"><span class="pill ' + c.status + '"><span class="pdot"></span>' + STATUS_LABEL[c.status] + '</span></div>' +
+      '<div class="cert-scope"><div class="st">Scope</div><div class="sp">' + c.scope + '</div></div>';
+    wall.appendChild(el);
+  });
+
+  // filters
+  var cbtns = document.querySelectorAll("#cert-filters .cert-fbtn");
+  cbtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      cbtns.forEach(function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+      var f = b.getAttribute("data-cf");
+      document.querySelectorAll(".cert-badge").forEach(function (bd) {
+        bd.classList.toggle("dim", f !== "all" && bd.getAttribute("data-status") !== f);
+      });
+    });
+  });
+
+  /* ═══════════ DATA: PIPELINE ═══════════ */
+  var STAGES = [
+    { s: "Backlog", sub: "intake", ico: "M4 6h16M4 12h16M4 18h10" },
+    { s: "Design", sub: "spec", ico: "M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" },
+    { s: "Build", sub: "code", ico: "M8 6l-6 6 6 6M16 6l6 6-6 6" },
+    { s: "Review", sub: "reviewer", ico: "M20 6L9 17l-5-5" },
+    { s: "Test", sub: "verify", ico: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" },
+    { s: "Security", sub: "gate", gate: true, key: "security", ico: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
+    { s: "Compliance", sub: "gate", gate: true, key: "compliance", ico: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" },
+    { s: "Deploy", sub: "release", ico: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" }
+  ];
+
+  var GATES = {
+    security: {
+      title: "Security gate",
+      agent: "Security agent",
+      checks: [
+        { name: "CodeQL / SAST", nano: "static analysis on every PR", ico: "M8 6l-6 6 6 6M16 6l6 6-6 6",
+          ctrlId: "ISO 27001 A.8.28", ctrl: "Secure coding",
+          how: "CodeQL scans the diff for injection, unsafe deserialization and path traversal before merge — findings block the PR.",
+          evidence: "evidence/iso-27001/A.8.28/codeql-{sha}.sarif" },
+        { name: "Secret scanning + push protection", nano: "secrets never reach the repo", ico: "M12 17a2 2 0 100-4 2 2 0 000 4zM5 11h14v9a1 1 0 01-1 1H6a1 1 0 01-1-1zM8 11V7a4 4 0 018 0v4",
+          ctrlId: "ISO 27001 A.8.24", ctrl: "Secrets management",
+          how: "Push protection rejects commits containing credentials; the scanner sweeps history and alerts on any leak.",
+          evidence: "evidence/iso-27001/A.8.24/secret-scan-{sha}.json" },
+        { name: "Dependency review / Dependabot", nano: "supply-chain vuln screening", ico: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
+          ctrlId: "SOC 2 CC7.1 · ISO 27001 A.8.8", ctrl: "Supply-chain / vulnerability mgmt",
+          how: "Dependency review blocks PRs that introduce a vulnerable package; Dependabot raises upgrade PRs for known CVEs.",
+          evidence: "evidence/soc2/CC7.1/dep-review-{sha}.json" },
+        { name: "Threat monitoring · pen-test checklist", nano: "detection & release check", ico: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+          ctrlId: "ISO 27001 A.8.16 · NIST DE", ctrl: "Monitoring & detection",
+          how: "Continuous threat monitoring on the running platform; the pen-test checklist (seeded from the ATIB security spec) runs each release.",
+          evidence: "evidence/iso-27001/A.8.16/pentest-checklist-{date}.md" }
+      ]
+    },
+    compliance: {
+      title: "Compliance gate",
+      agent: "Compliance agent",
+      checks: [
+        { name: "Control evaluation", nano: "does this PR break a control?", ico: "M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",
+          ctrlId: "SOC 2 CC8.1", ctrl: "Change breaks no control",
+          how: "The agent evaluates the diff against the whole catalogue. A new unencrypted PII field → GDPR red → merge blocked, with the reason.",
+          evidence: "evidence/soc2/CC8.1/control-eval-{sha}.json" },
+        { name: "Human PR approval", nano: "the accountable 20%", ico: "M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
+          ctrlId: "ISO 27001 A.8.32", ctrl: "Change management",
+          how: "A human reviewer approves before merge — no bypass actors exist, not even admins or bots. The agent proposes; the human disposes.",
+          evidence: "evidence/change-mgmt/pr-approval-{sha}.json" },
+        { name: "Deploy-gate", nano: "green controls or no ship", ico: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+          ctrlId: "ISO 27001 A.8.31", ctrl: "Release management",
+          how: "Deploy is blocked until every required control is green; canary and rollback are recorded as part of the release evidence.",
+          evidence: "evidence/release/deploy-attestation-{sha}.json" },
+        { name: "Test coverage", nano: "verification threshold", ico: "M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3",
+          ctrlId: "SOC 2 CC7.1", ctrl: "Verification",
+          how: "The verify job enforces a coverage threshold; a PR below it fails and cannot merge — proving the change was actually tested.",
+          evidence: "evidence/soc2/CC7.1/coverage-{sha}.xml" }
+      ]
+    }
+  };
+
+  var track = document.getElementById("pipe-track");
+  var checksEl = document.getElementById("checks");
+  var drillDetail = document.getElementById("drill-detail");
+  var drillChecksH = document.getElementById("drill-checks-h");
+  var curGate = "security", curCheck = 0;
+
+  STAGES.forEach(function (st, i) {
+    var b = document.createElement(st.gate ? "button" : "div");
+    b.className = "pipe-step" + (st.gate ? " gate" : "") + (i < 7 ? " flowdone" : "");
+    b.innerHTML =
+      '<span class="pipe-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + st.ico + '"/></svg></span>' +
+      '<span class="lbl">' + st.s + '</span><span class="sub">' + st.sub + '</span>';
+    if (st.gate) {
+      b.setAttribute("aria-label", st.s + " gate — show its checks");
+      b.addEventListener("click", function () { selectGate(st.key); });
+    }
+    track.appendChild(b);
+  });
+  var gateEls = {};
+  track.querySelectorAll(".pipe-step.gate").forEach(function (el) {
+    var lbl = el.querySelector(".lbl").textContent.toLowerCase();
+    gateEls[lbl] = el;
+  });
+
+  function selectGate(key) {
+    curGate = key; curCheck = 0;
+    Object.keys(gateEls).forEach(function (k) { gateEls[k].classList.toggle("sel", k === key); });
+    var g = GATES[key];
+    drillChecksH.textContent = g.title + " · run by the " + g.agent;
+    checksEl.innerHTML = "";
+    g.checks.forEach(function (chk, idx) {
+      var c = document.createElement("button");
+      c.className = "check" + (idx === 0 ? " sel" : "");
+      c.innerHTML =
+        '<span class="cico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="' + chk.ico + '"/></svg></span>' +
+        '<span class="cname">' + chk.name + '<span class="cnano">' + chk.nano + '</span></span>' +
+        '<svg class="cchev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+      c.addEventListener("click", function () {
+        curCheck = idx;
+        checksEl.querySelectorAll(".check").forEach(function (x, k) { x.classList.toggle("sel", k === idx); });
+        renderDetail();
+      });
+      checksEl.appendChild(c);
+    });
+    renderDetail();
+  }
+
+  function renderDetail() {
+    var g = GATES[curGate], chk = g.checks[curCheck];
+    drillDetail.innerHTML =
+      '<div class="dd-flow"><span>Check</span><span class="arw">→</span><span>Control</span><span class="arw">→</span><span>Evidence</span></div>' +
+      '<div class="dd-block"><div class="k">Automated check</div><div class="v">' + chk.name + '</div><div class="v desc">' + chk.how + '</div></div>' +
+      '<div class="dd-block"><div class="k">Satisfies control</div><div class="v"><span class="dd-ctrl-id">' + chk.ctrlId + '</span> &nbsp;' + chk.ctrl + '</div></div>' +
+      '<div class="dd-block"><div class="k">Evidence auto-produced</div><div class="dd-evidence"><span class="tag">nova-compliance/</span>' + chk.evidence + '</div></div>' +
+      '<div class="dd-gateblock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>If this check is red, the control is red — the PR can\'t merge and the change can\'t ship.</span></div>';
+  }
+  selectGate("security");
+
+  /* ═══════════ DATA: GRC-AS-CODE TREE ═══════════ */
+  var TREE = [
+    { f: "controls/", d: "each control as a file", type: "control",
+      ctrl: {
+        id: "NOVA-SEC-A.8.24",
+        standard: "ISO 27001 A.8.24",
+        requirement: "Cryptography — all PII and secrets encrypted at rest; keys held in Key Vault, never in code.",
+        verified: "CodeQL + infra scan assert every PII field has encryption-at-rest and no secret is hardcoded. Runs on every PR.",
+        owner: "Compliance agent"
+      } },
+    { f: "evidence/", d: "auto-collected artefacts", type: "evidence",
+      evi: {
+        path: "evidence/iso-27001/A.8.24/2026-07-22-keyvault-snapshot.json",
+        lines: [
+          '{ <span class="key">"control"</span>: <span class="str">"NOVA-SEC-A.8.24"</span>,',
+          '&nbsp;&nbsp;<span class="key">"collected"</span>: <span class="str">"2026-07-22T04:11Z"</span>,',
+          '&nbsp;&nbsp;<span class="key">"trigger"</span>: <span class="str">"PR #128 · daily-sweep"</span>,',
+          '&nbsp;&nbsp;<span class="key">"pii_fields_encrypted"</span>: <span class="ok">true</span>,',
+          '&nbsp;&nbsp;<span class="key">"secrets_in_code"</span>: <span class="ok">0</span>,',
+          '&nbsp;&nbsp;<span class="key">"result"</span>: <span class="ok">"GREEN"</span> }'
+        ]
+      } },
+    { f: "policies/", d: "the policy pack", type: "text",
+      text: { h: "policies/", p: "The version-controlled policy pack — information security policy, access control, cryptography, data retention, AI governance. Each policy links to the controls that enforce it, so a policy is never just a document; it has teeth in the pipeline." } },
+    { f: "audits/", d: "audit runs & drift log", type: "text",
+      text: { h: "audits/", p: "Every audit run — daily full sweep, per-PR evaluation, per-deploy check — is recorded here alongside the DriftLog: what changed a control's state, when, and which PR or deploy caused it. This is the timeline an auditor walks." } },
+    { f: "certifications/", d: "the live tracker", type: "text",
+      text: { h: "certifications/", p: "The live certification tracker — standard → status → target date → owner → last evidence — for the platform and, derived from it, for each customer instance. It is the source of the tracker table below and of the readiness meter." } }
+  ];
+
+  var treeNodes = document.getElementById("tree-nodes");
+  var grcDetail = document.getElementById("grc-detail");
+  TREE.forEach(function (node, i) {
+    var b = document.createElement("button");
+    b.className = "tnode" + (i === 0 ? " sel" : "");
+    b.innerHTML = '<span class="branch">' + (i === TREE.length - 1 ? "└─" : "├─") + '</span><span class="fname">' + node.f + '</span><span class="fdesc">' + node.d + '</span>';
+    b.addEventListener("click", function () {
+      treeNodes.querySelectorAll(".tnode").forEach(function (x) { x.classList.remove("sel"); });
+      b.classList.add("sel");
+      renderGRC(node);
+    });
+    treeNodes.appendChild(b);
+  });
+
+  function renderGRC(node) {
+    if (node.type === "control") {
+      var c = node.ctrl;
+      grcDetail.innerHTML =
+        '<div class="ctrl-card"><div class="cc-head"><span class="cc-id">' + c.id + '</span><span class="pill certified"><span class="pdot"></span>Green</span></div>' +
+        '<dl class="cc-grid">' +
+        '<dt>Standard</dt><dd>' + c.standard + '</dd>' +
+        '<dt>Requirement</dt><dd>' + c.requirement + '</dd>' +
+        '<dt>How&nbsp;verified</dt><dd>' + c.verified + '</dd>' +
+        '<dt>Owner</dt><dd><span class="owner">◆ ' + c.owner + '</span></dd>' +
+        '</dl></div>' +
+        '<div class="evi-card"><div class="eh"><span class="dotb"></span>Latest evidence artefact — auto-collected</div>' +
+        '<div class="evi-body">' + TREE[1].evi.lines.join("<br>") + '</div></div>';
+    } else if (node.type === "evidence") {
+      var e = node.evi;
+      grcDetail.innerHTML =
+        '<div class="evi-card"><div class="eh"><span class="dotb"></span>' + e.path + '</div>' +
+        '<div class="evi-body">' + e.lines.join("<br>") + '</div></div>' +
+        '<div class="ctrl-card"><div class="cc-head"><span class="cc-id">How evidence is produced</span></div>' +
+        '<dl class="cc-grid"><dt>Trigger</dt><dd>Every PR, every deploy, and a daily full sweep — no human collects it.</dd>' +
+        '<dt>Format</dt><dd>Timestamped, version-controlled JSON / SARIF / Markdown, keyed by <span class="mono">framework / control</span>.</dd>' +
+        '<dt>Use</dt><dd>Assembled into an auditor-ready pack in minutes, not weeks.</dd></dl></div>';
+    } else {
+      var t = node.text;
+      grcDetail.innerHTML =
+        '<div class="ctrl-card"><div class="cc-head"><span class="cc-id">' + t.h + '</span></div>' +
+        '<p style="font-size:0.92rem;color:var(--muted);line-height:1.7;">' + t.p + '</p></div>';
+    }
+  }
+  renderGRC(TREE[0]);
+
+  /* ═══════════ DATA: CERTIFICATION TRACKER ═══════════ */
+  var TRACK = [
+    { std: "ISO 27001", sub: "Information Security Mgmt", status: "progress", target: "2026 Q4", owner: "Compliance agent → human attests", evi: "2026-07-22" },
+    { std: "SOC 2 Type II", sub: "Trust Services Criteria", status: "progress", target: "2027 Q1", owner: "Compliance agent", evi: "2026-07-21" },
+    { std: "ISO 42001", sub: "AI Management System", status: "progress", target: "2027 Q1", owner: "Compliance agent (audits fleet)", evi: "2026-07-22" },
+    { std: "PCI-DSS v4.0", sub: "Card data security", status: "planned", target: "2027 Q2", owner: "Security agent", evi: "2026-07-20" },
+    { std: "UK-GDPR", sub: "Data protection", status: "certified", target: "Maintained", owner: "Compliance agent", evi: "2026-07-22" },
+    { std: "ISO 27017", sub: "Cloud security", status: "planned", target: "2027 Q2", owner: "Security agent", evi: "2026-07-19" },
+    { std: "ISO 27018", sub: "Cloud PII", status: "planned", target: "2027 Q2", owner: "Security agent", evi: "2026-07-19" },
+    { std: "NIST CSF 2.0", sub: "Cybersecurity framework", status: "certified", target: "Aligned", owner: "Security agent", evi: "2026-07-22" },
+    { std: "Cyber Essentials Plus", sub: "UK NCSC baseline", status: "progress", target: "2026 Q4", owner: "Security agent", evi: "2026-07-21" },
+    { std: "ISO 20022", sub: "Financial messaging", status: "certified", target: "Native", owner: "Compliance agent", evi: "2026-07-18" },
+    { std: "Open Banking / PSD2", sub: "Open banking APIs", status: "progress", target: "2027 Q1", owner: "Compliance agent", evi: "2026-07-20" },
+    { std: "PSD2 SCA", sub: "Strong Customer Auth", status: "progress", target: "2027 Q1", owner: "Security agent", evi: "2026-07-20" }
+  ];
+
+  var trkBody = document.getElementById("trk-body");
+  function renderTrack(filter) {
+    trkBody.innerHTML = "";
+    var rows = TRACK.filter(function (r) { return filter === "all" || r.status === filter; });
+    if (!rows.length) {
+      trkBody.innerHTML = '<tr><td colspan="5" class="trk-empty">No standards in this status.</td></tr>';
+      return;
+    }
+    rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td class="std">' + r.std + '<small>' + r.sub + '</small></td>' +
+        '<td><span class="pill ' + r.status + '"><span class="pdot"></span>' + STATUS_LABEL[r.status] + '</span></td>' +
+        '<td>' + r.target + '</td>' +
+        '<td class="owner-cell">' + r.owner + '</td>' +
+        '<td class="evi-cell">' + r.evi + '</td>';
+      trkBody.appendChild(tr);
+    });
+  }
+
+  // readiness meter
+  (function () {
+    var total = TRACK.length;
+    var cert = TRACK.filter(function (r) { return r.status === "certified"; }).length;
+    var prog = TRACK.filter(function (r) { return r.status === "progress"; }).length;
+    var plan = total - cert - prog;
+    var pctCert = cert / total * 100, pctProg = prog / total * 100, pctPlan = plan / total * 100;
+    // readiness = certified fully + in-progress half
+    var readiness = Math.round((cert + prog * 0.5) / total * 100);
+    document.getElementById("seg-cert").style.width = pctCert + "%";
+    document.getElementById("seg-prog").style.width = pctProg + "%";
+    document.getElementById("seg-plan").style.width = pctPlan + "%";
+    var pctEl = document.getElementById("rd-pct");
+    // count-up when visible
+    var done = false;
+    function countUp() {
+      if (done) return; done = true;
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { pctEl.textContent = readiness; return; }
+      var n = 0; var iv = setInterval(function () { n += 2; if (n >= readiness) { n = readiness; clearInterval(iv); } pctEl.textContent = n; }, 22);
+    }
+    var rdBox = document.querySelector(".readiness");
+    if ("IntersectionObserver" in window) {
+      var io2 = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { countUp(); io2.disconnect(); } }); }, { threshold: 0.4 });
+      io2.observe(rdBox);
+    } else { countUp(); }
+  })();
+
+  var tbtns = document.querySelectorAll("#trk-filters .cert-fbtn");
+  tbtns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      tbtns.forEach(function (x) { x.classList.remove("on"); });
+      b.classList.add("on");
+      renderTrack(b.getAttribute("data-tf"));
+    });
+  });
+  renderTrack("all");
+
+  /* ═══════════ DATA: AUDIT LOOP ═══════════ */
+  var LOOP = [
+    { t: "Scan", d: "SAST, secret, dependency & infra sweep across every change and the running platform.", kanban: false },
+    { t: "Map to controls", d: "Each finding is mapped to a control in the catalogue — which ISO / SOC 2 / PCI requirement does it touch?", kanban: false },
+    { t: "Collect evidence", d: "A timestamped, version-controlled artefact is written into evidence/ — audit-ready, no human hand.", kanban: false },
+    { t: "Audit", d: "Score each control green / amber / red against the standard — daily sweep, per-PR, per-deploy.", kanban: false },
+    { t: "Flag gaps", d: "Drift detected — a control that was green just turned red — is logged and the responsible owner identified.", kanban: false },
+    { t: "Raise issues", d: "A compliance or security issue is opened on the engineering Kanban — closing the loop back into the SDLC.", kanban: true }
+  ];
+
+  var loopSteps = document.getElementById("loop-steps");
+  var loopNodesG = document.getElementById("loop-nodes");
+  var loopSel = 0, loopTimer = null;
+
+  // place nodes around the circle
+  var cx = 170, cy = 170, R = 118;
+  LOOP.forEach(function (step, i) {
+    var ang = (-90 + i * (360 / LOOP.length)) * Math.PI / 180;
+    var x = cx + R * Math.cos(ang), y = cy + R * Math.sin(ang);
+    var g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    g.setAttribute("class", "loop-node-hit");
+    g.setAttribute("data-i", i);
+    g.innerHTML =
+      '<circle cx="' + x + '" cy="' + y + '" r="22" fill="#fff" stroke="#E5E9EF" stroke-width="2"></circle>' +
+      '<text x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" font-family="Inter,sans-serif" font-weight="800" font-size="15" fill="#9097A8">' + (i + 1) + '</text>';
+    g.addEventListener("click", function () { stopLoop(); selectLoop(i); });
+    loopNodesG.appendChild(g);
+  });
+  var nodeCircles = loopNodesG.querySelectorAll("circle");
+  var nodeTexts = loopNodesG.querySelectorAll("text");
+
+  LOOP.forEach(function (step, i) {
+    var b = document.createElement("button");
+    b.className = "loop-step" + (i === 0 ? " sel" : "");
+    b.innerHTML =
+      '<span class="ln">' + (i + 1) + '</span>' +
+      '<span><span class="lt">' + step.t + (step.kanban ? '<span class="kanban">→ Kanban</span>' : '') + '</span><span class="ld">' + step.d + '</span></span>';
+    b.addEventListener("click", function () { stopLoop(); selectLoop(i); });
+    loopSteps.appendChild(b);
+  });
+  var loopStepEls = loopSteps.querySelectorAll(".loop-step");
+
+  function selectLoop(i) {
+    loopSel = i;
+    loopStepEls.forEach(function (el, k) { el.classList.toggle("sel", k === i); });
+    nodeCircles.forEach(function (c, k) {
+      c.setAttribute("fill", k === i ? "url(#loopgrad)" : "#fff");
+      c.setAttribute("stroke", k === i ? "transparent" : "#E5E9EF");
+    });
+    nodeTexts.forEach(function (t, k) { t.setAttribute("fill", k === i ? "#fff" : "#9097A8"); });
+  }
+  function stopLoop() { if (loopTimer) { clearInterval(loopTimer); loopTimer = null; } }
+  selectLoop(0);
+
+  // auto-advance the loop while the section is in view (respects reduced-motion)
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce && "IntersectionObserver" in window) {
+    var loopSec = document.getElementById("loop");
+    var ioLoop = new IntersectionObserver(function (en) {
+      en.forEach(function (e) {
+        if (e.isIntersecting && !loopTimer) {
+          loopTimer = setInterval(function () { selectLoop((loopSel + 1) % LOOP.length); }, 2400);
+        } else if (!e.isIntersecting) { stopLoop(); }
+      });
+    }, { threshold: 0.35 });
+    ioLoop.observe(loopSec);
+  }
+
+  /* ═══════════ FADE-UP ═══════════ */
+  var fade = document.querySelectorAll(".fade-up");
+  if (!("IntersectionObserver" in window)) {
+    fade.forEach(function (e) { e.classList.add("visible"); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("visible"); io.unobserve(en.target); } });
+    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
+    fade.forEach(function (e) { io.observe(e); });
+  }
+
+  /* ═══════════ SCROLL-SPY NAV ═══════════ */
+  var navLinks = document.querySelectorAll(".nav-links a[data-nav]");
+  var sections = ["certs", "agents", "pipeline", "grc", "tracker", "loop"].map(function (id) { return document.getElementById(id); });
+  function spy() {
+    var pos = window.scrollY + 130;
+    var active = null;
+    sections.forEach(function (s) { if (s && s.offsetTop <= pos) active = s.id; });
+    navLinks.forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-nav") === active); });
+  }
+  window.addEventListener("scroll", spy, { passive: true });
+  spy();
+})();
+</script>
+</body>
+</html>
